@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>RNA-seq Crash Course - About</title>
+<title>RNA-seq Crash Course</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,59 +20,25 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for syntax highlighting */
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
 </style>
 
 
-<script src="site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/clipboard/clipboard.min.js"></script>
-<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="site_libs/quarto-search/fuse.min.js"></script>
-<script src="site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="./">
-<script src="site_libs/quarto-html/quarto.js"></script>
-<script src="site_libs/quarto-html/popper.min.js"></script>
-<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="site_libs/quarto-html/anchor.min.js"></script>
-<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
+<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../">
+<script src="../site_libs/quarto-html/quarto.js"></script>
+<script src="../site_libs/quarto-html/popper.min.js"></script>
+<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../site_libs/quarto-html/quarto-syntax-highlighting.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../site_libs/bootstrap/bootstrap.min.css" rel="stylesheet" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -102,7 +68,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 }</script>
 
 
-<link rel="stylesheet" href="styles.css">
+<link rel="stylesheet" href="../styles.css">
 </head>
 
 <body class="nav-fixed">
@@ -112,7 +78,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a class="navbar-brand" href="./index.html">
+    <a class="navbar-brand" href="../index.html">
     <span class="navbar-title">RNA-seq Crash Course</span>
     </a>
   </div>
@@ -123,11 +89,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link" href="./index.html"> 
+    <a class="nav-link" href="../index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="./about.html" aria-current="page"> 
+    <a class="nav-link" href="../about.html"> 
 <span class="menu-text">About</span></a>
   </li>  
   <li class="nav-item dropdown ">
@@ -136,11 +102,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-computing">    
         <li>
-    <a class="dropdown-item" href="./computing/hpc.html">
+    <a class="dropdown-item" href="../computing/hpc.html">
  <span class="dropdown-text">High Performance Computing</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="./computing/isaac-ng.html">
+    <a class="dropdown-item" href="../computing/isaac-ng.html">
  <span class="dropdown-text">ISAAC-NG</span></a>
   </li>  
     </ul>
@@ -157,39 +123,118 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#high-performance-computing" id="toc-high-performance-computing" class="nav-link active" data-scroll-target="#high-performance-computing">High Performance Computing</a>
+  <ul class="collapse">
+  <li><a href="#basic-computing-terminology" id="toc-basic-computing-terminology" class="nav-link" data-scroll-target="#basic-computing-terminology">Basic computing terminology</a>
+  <ul class="collapse">
+  <li><a href="#resources-and-computer-components" id="toc-resources-and-computer-components" class="nav-link" data-scroll-target="#resources-and-computer-components">Resources and computer components</a></li>
+  <li><a href="#an-imperfect-analogy" id="toc-an-imperfect-analogy" class="nav-link" data-scroll-target="#an-imperfect-analogy">An imperfect analogy</a></li>
+  </ul></li>
+  <li><a href="#what-is-an-hpc" id="toc-what-is-an-hpc" class="nav-link" data-scroll-target="#what-is-an-hpc">What is an HPC?</a></li>
+  <li><a href="#why-use-an-hpc" id="toc-why-use-an-hpc" class="nav-link" data-scroll-target="#why-use-an-hpc">Why use an HPC?</a></li>
+  <li><a href="#other-resources" id="toc-other-resources" class="nav-link" data-scroll-target="#other-resources">Other resources</a></li>
+  </ul></li>
+  </ul>
+</nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default">
-<div class="quarto-title">
-<h1 class="title">About</h1>
+
+
+
+<section id="high-performance-computing" class="level1">
+<h1>High Performance Computing</h1>
+<section id="basic-computing-terminology" class="level2">
+<h2 class="anchored" data-anchor-id="basic-computing-terminology">Basic computing terminology</h2>
+<section id="resources-and-computer-components" class="level3">
+<h3 class="anchored" data-anchor-id="resources-and-computer-components">Resources and computer components</h3>
+<dl>
+<dt>Job</dt>
+<dd>
+Some unit of work or collection of tasks that needs to be performed by a computing system. In typical usage this is not well defined, and the scope of what a job is can vary wildly. I typically use job to refer to some logically connected group of tasks that I want the computer to perform.
+</dd>
+<dt>Task</dt>
+<dd>
+A small unit of work, usually a specific operation performed by the computer. Often a part of a larger job.
+</dd>
+<dt>CPU (central processing unit)</dt>
+<dd>
+The core computational unit of a PC or node. This is the hardware component that performs computations. AKA: Processor.
+</dd>
+<dt>Memory / RAM</dt>
+<dd>
+Site of temporary information storage for holding data while computations are performed on the data. Important note: this is distinct from data storage.
+</dd>
+<dt>Data storage / disk space</dt>
+<dd>
+Permanent or long term storage of data.
+</dd>
+</dl>
+</section>
+<section id="an-imperfect-analogy" class="level3">
+<h3 class="anchored" data-anchor-id="an-imperfect-analogy">An imperfect analogy</h3>
+<p>Throughout this page, we will use an analogy to help understand computing. The goal here is to develop a mental model of computing and the interplay of computing components and resources that enables users to more effectively and efficiently utilize the resources they have access to.</p>
+<p>Think about computing as being like a bakery. At this bakery, the overall goal is to prepare all of the menu items and operate the store front.</p>
+<p>There are many <strong>jobs</strong> at this bakery: baking croissants, preparing pastry creams and jams, stocking the pastry cases, and washing dishes among many others. Each job is composed of specific <strong>tasks</strong>: kneading bread dough and placing doughnuts in a pastry case are just a couple of examples. These similarities follow pretty naturally from how we use the terms in computing.</p>
+<p>These jobs and tasks obviously aren’t going to perform themselves. Someone must do these tasks, and they have to have physical resources to perform their tasks. We can think of the bakers as being like <strong>CPUs</strong>. The bakers are who physically perform the tasks of kneading and placing according to recipes and standard operating procedures, much like the CPU performs computations based on sets of instructions called programs. In this analogy the raw ingredients, goods in progress like dough, and kitchen equipment such as mixers represent <strong>memory</strong>. The ingredients and equipment are used temporarily by the bakers, often to transform one thing into another such as shaping a ball of dough into a loaf or using a dish brush to wash a plate. This is much like the role memory plays in computing, where it temporarily holds data while the CPU performs computations on the data. Finally, there are many parts of a bakery that act like <strong>data storage</strong>. This includes the pastry case that holds the finished baked goods in the store front, the shelves in the kitchen that hold equipment, and even the recipe book.</p>
+</section>
+</section>
+<section id="what-is-an-hpc" class="level2">
+<h2 class="anchored" data-anchor-id="what-is-an-hpc">What is an HPC?</h2>
+<div class="quarto-figure quarto-figure-center">
+<figure class="figure">
+<p><img src="https://hbctraining.github.io/Intro-to-shell-flipped/img/compute_cluster.png" class="img-fluid figure-img"></p>
+<figcaption>HPC schematic</figcaption>
+</figure>
 </div>
+<ul>
+<li>A collection (<strong>cluster</strong>) of many computers (<strong>nodes</strong>) connected together</li>
+<li>Each node is a collection of CPUs and RAM with a small amount of associated disk space</li>
+<li>Large amount of shared data storage disks connected to nodes provides a huge amount of storage space</li>
+<li>Provides access for a large number of users</li>
+<li>Typically a <strong>login node</strong> that functions as the main way users interact with the HPC
+<ul>
+<li>Keeps the compute nodes free to handle heavy computing</li>
+</ul></li>
+<li>Typically a scheduling system to manage requirements for large number of users who have varying needs</li>
+</ul>
+<p>Analogy: If a PC is like a small mom and pop bake shop, then an HPC is an industrial scale kitchen.</p>
+<ul>
+<li>Have all of the same components but operate on different scales</li>
+<li>Larger scale means more complexity which means different logistics
+<ul>
+<li>Can’t walk up to a store front at a Hostess factory and place an order for a fresh Twinkie</li>
+</ul></li>
+</ul>
+</section>
+<section id="why-use-an-hpc" class="level2">
+<h2 class="anchored" data-anchor-id="why-use-an-hpc">Why use an HPC?</h2>
+<p>Two words: More power</p>
+<ul>
+<li>Each node has more resources than a typical PC
+<ul>
+<li>More CPUs means you can run more tasks at one time</li>
+<li>More RAM means you can run tasks that a PC can’t handle</li>
+<li>More disk space means you can work with more data than a PC can handle</li>
+</ul></li>
+<li>Presence of many compute nodes multiplies the benefits
+<ul>
+<li>Consider the <a href="https://oit.utk.edu/hpsc/isaac-open-enclave-new-kpb/system-overview-cluster-at-kpb/">ISAAC-NG cluster at UTK</a>: More than 200 nodes and over 12,000 cores!</li>
+</ul></li>
+</ul>
+</section>
+<section id="other-resources" class="level2">
+<h2 class="anchored" data-anchor-id="other-resources">Other resources</h2>
+<p>Much of this was motivated by the <a href="https://hbctraining.github.io/Intro-to-shell-flipped/lessons/08_HPC_intro_and_terms.html">HBC Training HPC intro</a>. Check out their page especially for thoughts on multithreading and parallelization.</p>
 
 
-
-<div class="quarto-title-meta">
-
-    
-  
-    
-  </div>
-  
-
-
-</header>
-
-
-<p>About this site</p>
-<div class="cell">
-<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span> <span class="sc">+</span> <span class="dv">1</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stdout">
-<pre><code>[1] 2</code></pre>
-</div>
-</div>
-
-
+</section>
+</section>
 
 </main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
