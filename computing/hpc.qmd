@@ -1,0 +1,82 @@
+# High Performance Computing
+
+## Basic computing terminology
+
+### Resources and computer components
+
+Job
+: Some unit of work or collection of tasks that needs to be performed by a computing system.
+In typical usage this is not well defined, and the scope of what a job is can vary wildly.
+I typically use job to refer to some logically connected group of tasks that I want the computer to perform.
+
+Task
+: A small unit of work, usually a specific operation performed by the computer.
+Often a part of a larger job.
+
+CPU (central processing unit)
+: The core computational unit of a PC or node.
+This is the hardware component that performs computations.
+AKA: Processor.
+
+Memory / RAM
+: Site of temporary information storage for holding data while computations are performed on the data.
+Important note: this is distinct from data storage.
+
+Data storage / disk space
+: Permanent or long term storage of data.
+
+### An imperfect analogy
+
+Throughout this page, we will use an analogy to help understand computing.
+The goal here is to develop a mental model of computing and the interplay of computing components and resources that enables users to more effectively and efficiently utilize the resources they have access to.
+
+Think about computing as being like a bakery.
+At this bakery, the overall goal is to prepare all of the menu items and operate the store front.
+
+There are many **jobs** at this bakery: baking croissants, preparing pastry creams and jams, stocking the pastry cases, and washing dishes among many others.
+Each job is composed of specific **tasks**: kneading bread dough and placing doughnuts in a pastry case are just a couple of examples.
+These similarities follow pretty naturally from how we use the terms in computing.
+
+These jobs and tasks obviously aren't going to perform themselves.
+Someone must do these tasks, and they have to have physical resources to perform their tasks.
+We can think of the bakers as being like **CPUs**.
+The bakers are who physically perform the tasks of kneading and placing according to recipes and standard operating procedures, much like the CPU performs computations based on sets of instructions called programs.
+In this analogy the raw ingredients, goods in progress like dough, and kitchen equipment such as mixers represent **memory**.
+The ingredients and equipment are used temporarily by the bakers, often to transform one thing into another such as shaping a ball of dough into a loaf or using a dish brush to wash a plate.
+This is much like the role memory plays in computing, where it temporarily holds data while the CPU performs computations on the data.
+Finally, there are many parts of a bakery that act like **data storage**.
+This includes the pastry case that holds the finished baked goods in the store front, the shelves in the kitchen that hold equipment, and even the recipe book.
+
+## What is an HPC?
+
+![HPC schematic](https://hbctraining.github.io/Intro-to-shell-flipped/img/compute_cluster.png)
+
+- A collection (**cluster**) of many computers (**nodes**) connected together
+- Each node is a collection of CPUs and RAM with a small amount of associated disk space
+- Large amount of shared data storage disks connected to nodes provides a huge amount of storage space
+- Provides access for a large number of users
+- Typically a **login node** that functions as the main way users interact with the HPC
+  - Keeps the compute nodes free to handle heavy computing
+- Typically a scheduling system to manage requirements for large number of users who have varying needs
+  
+Analogy: If a PC is like a small mom and pop bake shop, then an HPC is an industrial scale kitchen.
+
+- Have all of the same components but operate on different scales
+- Larger scale means more complexity which means different logistics
+  - Can't walk up to a store front at a Hostess factory and place an order for a fresh Twinkie
+  
+## Why use an HPC?
+
+Two words: More power
+
+- Each node has more resources than a typical PC
+  - More CPUs means you can run more tasks at one time
+  - More RAM means you can run tasks that a PC can't handle
+  - More disk space means you can work with more data than a PC can handle
+- Presence of many compute nodes multiplies the benefits
+  - Consider the [ISAAC-NG cluster at UTK](https://oit.utk.edu/hpsc/isaac-open-enclave-new-kpb/system-overview-cluster-at-kpb/): More than 200 nodes and over 12,000 cores!
+
+## Other resources
+
+Much of this was motivated by the [HBC Training HPC intro](https://hbctraining.github.io/Intro-to-shell-flipped/lessons/08_HPC_intro_and_terms.html).
+Check out their page especially for thoughts on multithreading and parallelization.
