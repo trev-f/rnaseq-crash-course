@@ -1,3 +1,13 @@
 # ISAAC-NG
 
 [ISAAC-NG docs](https://oit.utk.edu/hpsc/isaac-open-enclave-new-kpb/)
+
+[Job submission workshop](https://gist.github.com/izaakm/fe294a66be94113d60ff2dc220735646)
+
+## Access and login
+
+Easiest: Browser login through Open OnDemand
+
+<https://login.isaac.utk.edu/>
+
+
