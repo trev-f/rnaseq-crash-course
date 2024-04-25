@@ -12,6 +12,11 @@ website:
         menu:
           - computing/hpc.qmd
           - computing/isaac-ng.qmd
+  body-header: |
+    ::: {.callout-warning title="alpha stage warning"}
+    This website is in its alpha stage.
+    All pages are under active development and are subject to change at any time without warning.
+    :::
 
 format:
   html:
@@ -21,3 +26,4 @@ format:
 
 execute:
   freeze: auto
+
