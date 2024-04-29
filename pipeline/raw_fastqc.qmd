@@ -16,3 +16,52 @@ A few of the metrics we're most interested in include:
 - Average quality along reads.
 - Overrepresented sequences.
 - Adapter contamination.
+
+## FastQC usage
+
+### Software availability
+
+FastQC is available as a module that can be loaded on ISAAC:
+
+``` {.bash filename="Terminal"}
+module load fastqc/0.11.9
+```
+
+
+Alternatively, more recent versions are available as Apptainer containers through BioContainers:
+
+```{.bash filename="Terminal"}
+function fastqc {
+  apptainer exec \
+    https://depot.galaxyproject.org/singularity/fastqc:0.12.1--hdfd78af_0 \
+    fastqc "${@}"
+}
+```
+
+
+### Command usage
+
+Both of the methods above make FastQC available through the `fastqc` command.
+
+Basic usage:
+
+``` {.bash filename="Terminal"}
+fastqc sample1.fastq.gz sample2.fastq.gz # <1>
+```
+1. An arbitrary number of sequence files can be specified.
+Multiple sequence files must be separated by spaces.
+In practice we typically run FastQC on (gzipped) fastq files, but other sequence file formats can be used (run `fastqc --help` for details).
+
+
+Useful options:
+
+``` {.bash filename="Terminal"}
+fastqc \
+  --outdir reports/fastqc \          # <1>
+  --threads 2 \                      # <2>
+  sample1.fastq.gz sample2.fastq.gz
+```
+1. The directory to write output files into.
+2. The number of threads to use.
+This is the number of files that FastQC will process simultaneously.
+
