@@ -1,0 +1,18 @@
+# Raw Reads FastQC
+
+## Learning objectives
+
+- Generate raw reads QC reports with FastQC
+- Produce a compositve raw reads QC report with MultiQC
+
+## Purpose
+
+Raw reads QC should be performed to ensure that the quality of reads that came off of the sequencing platform is acceptable.
+FastQC is a straightforward command line tool for generating QC reports for reads in fastq format.
+
+A few of the metrics we're most interested in include:
+
+- Total number of reads and bases.
+- Average quality along reads.
+- Overrepresented sequences.
+- Adapter contamination.

@@ -12,6 +12,9 @@ website:
         menu:
           - computing/hpc.qmd
           - computing/isaac-ng.qmd
+      - text: "Pipeline"
+        menu:
+          - pipeline/raw_fastqc.qmd
   body-header: |
     ::: {.callout-warning title="alpha stage warning"}
     This website is in its alpha stage.
