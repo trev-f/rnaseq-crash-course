@@ -62,6 +62,50 @@ fastqc \
   sample1.fastq.gz sample2.fastq.gz
 ```
 1. The directory to write output files into.
+If this directory does not exist, the command will fail with an error.
 2. The number of threads to use.
 This is the number of files that FastQC will process simultaneously.
 
+
+## MultiQC usage
+
+### Software availability
+
+MultiQC had a significant update around v1.19 that made its reports significantly better from a user standpoint, especially when working with a large number of samples.
+I strongly recommend using the most recent MultiQC version (v1.21 at the time of writing this).
+
+MultiQC is available as Apptainer containers through BioContainers:
+
+```{.bash filename="Terminal"}
+function multiqc {
+  apptainer exec \
+    https://depot.galaxyproject.org/singularity/multiqc:1.21--pyhdfd78af_0 \
+    multiqc "${@}"
+}
+```
+
+
+### Command usage
+
+The method above makes MultiQC available through the `multiqc` command.
+
+Basic usage:
+
+``` {.bash filename="Terminal"}
+multiqc . # <1>
+```
+1. This will traverse through all files and directories in the current working directory (`.`) and add any files that MultiQC recognizes to the report that it generates.
+
+
+Useful options:
+
+``` {.bash filename="Terminal"}
+multiqc \
+  --filename raw_reads_qc \ # <1>
+  --outdir reports \        # <2>
+  --title "Raw reads QC" \  # <3>
+  .
+```
+1. Filename to use for the MultiQC report and data files.
+2. The directory to write output files into.
+3. A title for the report.
