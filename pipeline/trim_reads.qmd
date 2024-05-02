@@ -13,3 +13,31 @@ The most common issues we run into include low quality base calls and the presen
 These problematic reads can cause issues in data quality in downstream steps, so we use read trimming to remove them.
 
 After read trimming, we run FastQC on the trimmed reads to make sure the trimming mitigated any issues observed at the raw reads QC step.
+
+## fastp usage
+
+### Software availability
+
+[fastp docs](https://github.com/OpenGene/fastp)
+
+fastp is available as Apptainer containers through BioContainers:
+
+```{.bash filename="Terminal"}
+function fastp {
+  local image_uri=https://depot.galaxyproject.org/singularity/fastp:0.23.4--hadf994f_3
+  apptainer exec "${image_uri}" fastp "${@}"
+}
+```
+
+
+This method makes fastp available through the `fastp` command.
+
+### Command usage
+
+Basic usage:
+
+``` {.bash filename="Terminal"}
+fastp \
+  --in1 sample1.fastq.gz \
+  --out1 sample1_trimmed.fastq.gz
+```
