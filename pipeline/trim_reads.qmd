@@ -5,3 +5,11 @@
 - Trim raw reads with fastp
 - Generate trimmed reads QC reports with FastQC
 - Produce a composite trimmed reads QC report with MultiQC
+
+## Purpose
+
+Even successful and high quality sequencing runs produce some problematic reads or portions of reads.
+The most common issues we run into include low quality base calls and the presence of adapters at the ends of reads.
+These problematic reads can cause issues in data quality in downstream steps, so we use read trimming to remove them.
+
+After read trimming, we run FastQC on the trimmed reads to make sure the trimming mitigated any issues observed at the raw reads QC step.
