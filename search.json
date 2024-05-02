@@ -1,24 +1,45 @@
 [
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "RNA-seq Crash Course",
-    "section": "",
-    "text": "alpha stage warning\n\n\n\nThis website is in its alpha stage. All pages are under active development and are subject to change at any time without warning.\n\n\n\n\n\n\n\nRNA-seq Crash Course\nThis is the website for the RNA-seq Crash Course by the University of Tennessee Institute of Agriculture Genomics Center."
-  },
-  {
-    "objectID": "computing/isaac-ng.html",
-    "href": "computing/isaac-ng.html",
-    "title": "ISAAC-NG",
+    "objectID": "pipeline/raw_fastqc.html",
+    "href": "pipeline/raw_fastqc.html",
+    "title": "Raw Reads FastQC",
     "section": "",
     "text": "alpha stage warning\n\n\n\nThis website is in its alpha stage. All pages are under active development and are subject to change at any time without warning."
   },
   {
-    "objectID": "computing/isaac-ng.html#access-and-login",
-    "href": "computing/isaac-ng.html#access-and-login",
-    "title": "ISAAC-NG",
-    "section": "Access and login",
-    "text": "Access and login\nEasiest: Browser login through Open OnDemand\nhttps://login.isaac.utk.edu/"
+    "objectID": "pipeline/raw_fastqc.html#learning-objectives",
+    "href": "pipeline/raw_fastqc.html#learning-objectives",
+    "title": "Raw Reads FastQC",
+    "section": "Learning objectives",
+    "text": "Learning objectives\n\nGenerate raw reads QC reports with FastQC\nProduce a compositve raw reads QC report with MultiQC"
+  },
+  {
+    "objectID": "pipeline/raw_fastqc.html#purpose",
+    "href": "pipeline/raw_fastqc.html#purpose",
+    "title": "Raw Reads FastQC",
+    "section": "Purpose",
+    "text": "Purpose\nRaw reads QC should be performed to ensure that the quality of reads that came off of the sequencing platform is acceptable. FastQC is a straightforward command line tool for generating QC reports for reads in fastq format.\nA few of the metrics we’re most interested in include:\n\nTotal number of reads and bases.\nAverage quality along reads.\nOverrepresented sequences.\nAdapter contamination."
+  },
+  {
+    "objectID": "pipeline/raw_fastqc.html#fastqc-usage",
+    "href": "pipeline/raw_fastqc.html#fastqc-usage",
+    "title": "Raw Reads FastQC",
+    "section": "FastQC usage",
+    "text": "FastQC usage\n\nSoftware availability\nFastQC is available as a module that can be loaded on ISAAC:\n\n\nTerminal\n\nmodule load fastqc/0.11.9\n\nAlternatively, more recent versions are available as Apptainer containers through BioContainers:\n\n\nTerminal\n\nfunction fastqc {\n  local image_uri=https://depot.galaxyproject.org/singularity/fastqc:0.12.1--hdfd78af_0\n  apptainer exec \"${image_uri}\" fastqc \"${@}\"\n}\n\n\n\nCommand usage\nBoth of the methods above make FastQC available through the fastqc command.\nBasic usage:\n\n\nTerminal\n\n1fastqc sample1.fastq.gz sample2.fastq.gz\n\n\n1\n\nAn arbitrary number of sequence files can be specified. Multiple sequence files must be separated by spaces. In practice we typically run FastQC on (gzipped) fastq files, but other sequence file formats can be used (run fastqc --help for details).\n\n\nUseful options:\n\n\nTerminal\n\nfastqc \\\n1  --outdir reports/fastqc \\\n2  --threads 2 \\\n  sample1.fastq.gz sample2.fastq.gz\n\n\n1\n\nThe directory to write output files into. If this directory does not exist, the command will fail with an error.\n\n2\n\nThe number of threads to use. This is the number of files that FastQC will process simultaneously."
+  },
+  {
+    "objectID": "pipeline/raw_fastqc.html#multiqc-usage",
+    "href": "pipeline/raw_fastqc.html#multiqc-usage",
+    "title": "Raw Reads FastQC",
+    "section": "MultiQC usage",
+    "text": "MultiQC usage\n\nSoftware availability\n\n\n\n\n\n\nMultiQC version\n\n\n\nMultiQC had a significant update around v1.19 that made its reports significantly better from a user standpoint, especially when working with a large number of samples. I strongly recommend using the most recent MultiQC version (v1.21 at the time of writing this).\n\n\nMultiQC is available as Apptainer containers through BioContainers:\n\n\nTerminal\n\nfunction multiqc {\n  local image_uri=https://depot.galaxyproject.org/singularity/multiqc:1.21--pyhdfd78af_0\n  apptainer exec \"${image_uri}\" multiqc \"${@}\"\n}\n\n\n\nCommand usage\nThe method above makes MultiQC available through the multiqc command.\nBasic usage:\n\n\nTerminal\n\n1multiqc .\n\n\n1\n\nThis will traverse through all files and directories in the current working directory (.) and add any files that MultiQC recognizes to the report that it generates.\n\n\nUseful options:\n\n\nTerminal\n\nmultiqc \\\n1  --filename raw_reads_qc \\\n2  --outdir reports \\\n3  --title \"Raw reads QC\" \\\n  .\n\n\n1\n\nFilename to use for the MultiQC report and data files.\n\n2\n\nThe directory to write output files into.\n\n3\n\nA title for the report."
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "alpha stage warning\n\n\n\nThis website is in its alpha stage. All pages are under active development and are subject to change at any time without warning.\n\n\n\n\n\n\n\nAbout"
   },
   {
     "objectID": "computing/hpc.html",
@@ -56,10 +77,24 @@
     "text": "Other resources\nMuch of this was motivated by the HBC Training HPC intro. Check out their page especially for thoughts on multithreading and parallelization."
   },
   {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "About",
+    "objectID": "computing/isaac-ng.html",
+    "href": "computing/isaac-ng.html",
+    "title": "ISAAC-NG",
     "section": "",
-    "text": "alpha stage warning\n\n\n\nThis website is in its alpha stage. All pages are under active development and are subject to change at any time without warning.\n\n\n\n\n\n\n\nAbout"
+    "text": "alpha stage warning\n\n\n\nThis website is in its alpha stage. All pages are under active development and are subject to change at any time without warning."
+  },
+  {
+    "objectID": "computing/isaac-ng.html#access-and-login",
+    "href": "computing/isaac-ng.html#access-and-login",
+    "title": "ISAAC-NG",
+    "section": "Access and login",
+    "text": "Access and login\nEasiest: Browser login through Open OnDemand\nhttps://login.isaac.utk.edu/"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "RNA-seq Crash Course",
+    "section": "",
+    "text": "alpha stage warning\n\n\n\nThis website is in its alpha stage. All pages are under active development and are subject to change at any time without warning.\n\n\n\n\n\n\n\nRNA-seq Crash Course\nThis is the website for the RNA-seq Crash Course by the University of Tennessee Institute of Agriculture Genomics Center."
   }
 ]
