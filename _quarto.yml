@@ -15,6 +15,7 @@ website:
       - text: "Pipeline"
         menu:
           - pipeline/raw_fastqc.qmd
+          - pipeline/trim_reads.qmd
   body-header: |
     ::: {.callout-warning title="alpha stage warning"}
     This website is in its alpha stage.

@@ -1,0 +1,7 @@
+# Trim Reads
+
+## Learning objectives
+
+- Trim raw reads with fastp
+- Generate trimmed reads QC reports with FastQC
+- Produce a composite trimmed reads QC report with MultiQC
