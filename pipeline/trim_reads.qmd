@@ -41,3 +41,56 @@ fastp \
   --in1 sample1.fastq.gz \
   --out1 sample1_trimmed.fastq.gz
 ```
+
+
+## fastp sbatch script
+
+Run fastp [in parallel](https://gist.github.com/izaakm/fe294a66be94113d60ff2dc220735646#parallel) using `--ntasks` and `srun`.
+
+``` {.bash filename="trim_reads_fastp.sh"}
+#!/bin/bash
+
+#SBATCH --job-name=trim_reads_fastp
+#SBATCH --ntasks=8
+#SBATCH --cpus-per-task=1
+#SBATCH --mem=4GB
+#SBATCH --time=00-00:30:00
+<... Remaining constant SBATCH flags ...>
+
+
+#######################################
+# Constants
+#######################################
+# Array of raw fastq files
+readonly fastqs=(data/reads/raw/*.fastq.gz)
+
+
+#######################################
+# Load software
+#######################################
+# echo to stderr
+function errcho {
+    >&2 echo "${@}"
+}
+function fastp {
+  local image_uri=https://depot.galaxyproject.org/singularity/fastp:0.23.4--hadf994f_3
+  apptainer exec "${image_uri}" fastp "${@}"
+}
+
+
+#######################################
+# Main program.
+#######################################
+for fastq in "${fastqs[@]}"; do
+  errcho "Trim reads: ${fastq}"
+  sample_name=$(basename $fastq .fastq.gz)
+  srun --ntasks 1 --cpus-per-task 4 \
+    fastp \
+    --thread "${SLURM_CPUS_PER_TASK}" \
+    --in1 "${fastq}" \
+    --out1 "${sample_name}_trimmed.fastq.gz" \
+    --json "${sample_name}_fastp.json" \
+    &
+done
+wait
+```
