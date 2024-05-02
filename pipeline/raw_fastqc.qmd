@@ -3,7 +3,7 @@
 ## Learning objectives
 
 - Generate raw reads QC reports with FastQC
-- Produce a compositve raw reads QC report with MultiQC
+- Produce a composite raw reads QC report with MultiQC
 
 ## Purpose
 
