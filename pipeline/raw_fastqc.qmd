@@ -32,9 +32,8 @@ Alternatively, more recent versions are available as Apptainer containers throug
 
 ```{.bash filename="Terminal"}
 function fastqc {
-  apptainer exec \
-    https://depot.galaxyproject.org/singularity/fastqc:0.12.1--hdfd78af_0 \
-    fastqc "${@}"
+  local image_uri=https://depot.galaxyproject.org/singularity/fastqc:0.12.1--hdfd78af_0
+  apptainer exec "${image_uri}" fastqc "${@}"
 }
 ```
 
@@ -71,16 +70,18 @@ This is the number of files that FastQC will process simultaneously.
 
 ### Software availability
 
+::: {.callout-note title="MultiQC version"}
 MultiQC had a significant update around v1.19 that made its reports significantly better from a user standpoint, especially when working with a large number of samples.
 I strongly recommend using the most recent MultiQC version (v1.21 at the time of writing this).
+:::
+
 
 MultiQC is available as Apptainer containers through BioContainers:
 
 ```{.bash filename="Terminal"}
 function multiqc {
-  apptainer exec \
-    https://depot.galaxyproject.org/singularity/multiqc:1.21--pyhdfd78af_0 \
-    multiqc "${@}"
+  local image_uri=https://depot.galaxyproject.org/singularity/multiqc:1.21--pyhdfd78af_0
+  apptainer exec "${image_uri}" multiqc "${@}"
 }
 ```
 
