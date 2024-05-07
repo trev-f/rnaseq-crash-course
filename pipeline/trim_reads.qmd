@@ -63,6 +63,9 @@ Run fastp [in parallel](https://gist.github.com/izaakm/fe294a66be94113d60ff2dc22
 #######################################
 # Array of raw fastq files
 readonly fastqs=(data/reads/raw/*.fastq.gz)
+# Output directory paths
+readonly out_data_dir="data/reads/trim"
+readonly out_reports_dir="reports/fastp"
 
 
 #######################################
@@ -88,8 +91,9 @@ for fastq in "${fastqs[@]}"; do
     fastp \
     --thread "${SLURM_CPUS_PER_TASK}" \
     --in1 "${fastq}" \
-    --out1 "${sample_name}_trimmed.fastq.gz" \
-    --json "${sample_name}_fastp.json" \
+    --out1 "${out_data_dir}/${sample_name}_trimmed.fastq.gz" \
+    --json "${out_reports_dir}/${sample_name}_fastp.json" \
+    --html "${out_reports_dir}/${sample_name}_fastp.html" \
     &
 done
 wait
