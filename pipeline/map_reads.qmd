@@ -18,3 +18,55 @@ After read trimming, we run FastQC on the trimmed reads to make sure the trimmin
 
 [^1]: The types of analyses we can perform are determined by factors such as availability of genomic resources, library construction, sequencing depth, etc.
 
+## Overview of mapping workflow
+
+```{mermaid}
+flowchart LR
+    ref_genome[(Reference\nGenome)]
+    ref_annotations[(Reference\nAnnotations)]
+    build_index{STAR\ngenomeGenerate}
+    ref_index[(Reference\nIndex)]
+
+    ref_genome --- build_index
+    ref_annotations --- build_index
+    build_index --> ref_index
+```
+
+## Software usage
+
+### STAR usage
+
+#### Software availability
+
+STAR is available as a module that can be loaded on ISAAC:
+
+``` {.bash filename="Terminal"}
+module load star/2.7.6a
+```
+
+
+Alternatively, more recent versions are available as Apptainer containers through BioContainers:
+
+```{.bash filename="Terminal"}
+function STAR {
+  local image_uri="https://depot.galaxyproject.org/singularity/star%3A2.7.11b--h43eeafb_1"
+  apptainer exec "${image_uri}" STAR "${@}"
+}
+```
+
+
+Both of the methods above make STAR available through the `STAR` command.
+
+
+### Command usage --- Generate genome index
+
+Basic usage:
+
+``` {.bash filename="Terminal"}
+STAR \
+  --runMode genomeGenerate \
+  --genomeFastaFiles genome.fasta \
+  --sjdbGTFfile annotations.gtf \
+  --genomeDir STAR
+```
+
