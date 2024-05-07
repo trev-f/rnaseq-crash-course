@@ -1,0 +1,20 @@
+# Map Reads
+
+## Learning objectives
+
+- Download reference genome and annotations
+- Map reads to reference genome with STAR
+- Generate index for BAM files
+- Generate QC report for mapped reads
+
+## Purpose
+
+Mapping high-quality reads to a reference is a fundamental step in a typical RNA-seq analysis.
+
+This mapping step assigns a read to the genomic locus that it is (likely) derived from.
+We can use this mapping information to generate a variety of data for downstream analysis such as determining the expression levels of genes, identifying novel splice sites, and identifying genomic variants[^1].
+
+After read trimming, we run FastQC on the trimmed reads to make sure the trimming mitigated any issues observed at the raw reads QC step.
+
+[^1]: The types of analyses we can perform are determined by factors such as availability of genomic resources, library construction, sequencing depth, etc.
+
