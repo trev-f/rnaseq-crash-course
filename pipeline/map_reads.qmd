@@ -88,6 +88,14 @@ STAR \
 #######################################
 # Constants
 #######################################
+# Path to directory where references should be stored
+readonly references_dir="data/references"
+# Path to directory where STAR genome index should be stored
+readonly star_genome_dir="${references_dir}/STAR"
+# URL for reference genome in fasta (fna) format
+readonly genome_url="https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/002/263/795/GCF_002263795.3_ARS-UCD2.0/GCF_002263795.3_ARS-UCD2.0_genomic.fna.gz"
+# URL for reference gene annotations in GTF format
+readonly annotations_url="https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/002/263/795/GCF_002263795.3_ARS-UCD2.0/GCF_002263795.3_ARS-UCD2.0_genomic.gtf.gz"
 
 
 #######################################
@@ -104,6 +112,44 @@ function STAR {
 
 
 #######################################
-# Main program.
+# Main program
 #######################################
+# create target directories
+mkdir -p "${references_dir}"
+
+# download reference genome
+errcho "Download reference genome"
+wget \
+  --no-clobber \
+  --directory-prefix="${references_dir}" \
+  "${genome_url}"
+# store the path to the reference genome in a variable
+genome_path="${references_dir}/$(basename "${genome_url}")"
+
+# download reference gene annotations
+errcho "Download reference gene annotations"
+wget \
+  --no-clobber \
+  --directory-prefix="${references_dir}" \
+  "${annotations_url}"
+# store the path to the reference genome in a variable
+annotations_path="${references_dir}/$(basename "${annotations_url}")"
+
+# decompress gzipped genome and annotations files
+# this is done using named pipes for the convenience of not having to manage uncompressed files
+mkfifo genome && zcat "${genome_path}" > genome &
+mkfifo annotations && zcat "${annotations_path}" > annotations &
+
+# generate STAR genome index
+errcho "Generate STAR genome index"
+STAR \
+  --runMode genomeGenerate \
+  --genomeDir "${star_genome_dir}" \
+  --runThreadN "${SLURM_CPUS_PER_TASK:-1}" \
+  --genomeFastaFiles genome \
+  --sjdbGTFfile annotations
+
+# remove the named pipes
+unlink genome
+unlink annotations
 ```
