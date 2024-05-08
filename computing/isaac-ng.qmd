@@ -10,4 +10,114 @@ Easiest: Browser login through Open OnDemand
 
 <https://login.isaac.utk.edu/>
 
+## Running jobs
 
+Tasks that utilize a lot of computing resources should **never** be run on the login nodes.
+Any tasks beyond basic ones such as file editing and management, code compliation, and job submission must be run on compute nodes.
+
+### Interactive sessions
+
+One way to run jobs on compute nodes is launch an interactive session.
+Interactive sessions allow us to access and interact with compute nodes through the terminal in essentially the same way we interact with the login node.
+
+The main benefit of interactive sessions is just that -- we can utilize the resources that are available on ISAAC-NG by directly interacting with them.
+This makes interactive sessions ideal for short sessions such as testing commands and developing scripts because we can directly run commands on a compute node without the need to wait for Slurm to allocate resources, configure jobs, and setup environments every time we tweak a program.
+However, interactive sessions are killed when we disconnect from the terminal, so for longer running tasks batch jobs are recommended.
+
+The command `srun --pty /bin/bash -i` is my preferred way of launching an interactive session, and this is how we will launch jobs in this crash course[^srun_vs_salloc].
+However, ISAAC-NG requires us to explicitly provide an account and a valid partition--QOS combination.
+Because interactive sessions are designed to be short-lived, we typically want to run them on the short partition and QOS so that they are launched more quickly and so we're not taking up resources from other partitions.
+
+[^srun_vs_salloc]: `salloc` is the officially recommended method for launching interactive sessions.
+I find `salloc` less user friendly as it requires us to SSH into the reserved compute node to access our job which moves us into our home directory.
+`srun --pty /bin/bash -i` drops us straight into our interactive session inside our current working directory without having to run any other commands.
+
+Here is a typical full command that we can use to launch an interactive session:
+
+```{.bash filename="Terminal"}
+srun \
+  --account ACF-UTK0011 \
+  --partition short \
+  --qos short \
+  --cpus-per-task 4 \
+  --pty \
+  /bin/bash -i
+```
+
+
+#### Launch interactive sessions with environment variables
+
+The whole point of running interactive jobs is to quickly and easily get a job on a compute node, but entering `srun` command above is anything but quick and easy.
+Luckily with Slurm we can make things easier on ourselves by using [environment variables](https://effective-shell.com/part-3-manipulating-text/variables-reading-input-and-mathematics/#shell-variables-and-environment-variables).
+Slurm commands such as `srun` and `salloc` can use specific environment variables to configure resource requests for jobs so that we don't have to explicitly supply them on the command line.
+We will also make use of setting these environment variables inside of a config file so that we don't have to type them in manually every time we want to set them.
+
+The first step is to create the config file of Slurm environment variables for interactive session[^make_slurm_config_dir]:
+
+[^make_slurm_config_dir]: If you don't have a `slurm-env` directory you will have to create it with `mkdir -p ~/.config/slurm-env`.
+There isn't anything special about this directory or file name, but it's good practice to put config files like this inside a subdirectory of `~/.config`.
+
+```{.bash filename="~/.config/slurm-env/interactive-slurm.env"}
+# srun uses prefix 'SLURM_'
+# https://slurm.schedmd.com/srun.html#SECTION_INPUT-ENVIRONMENT-VARIABLES
+export SLURM_ACCOUNT="ACF-UTK0011"
+export SLURM_PARTITION="short"
+export SLURM_QOS="short"
+export SLURM_TRES_PER_TASK="cpu:4"
+export SLURM_TIMELIMIT="03:00:00"
+
+# salloc uses prefix 'SALLOC_'
+# https://slurm.schedmd.com/salloc.html#lbAI
+export SALLOC_ACCOUNT="ACF-UTK0011"
+export SALLOC_PARTITION="short"
+export SALLOC_QOS="short"
+export SALLOC_TRES_PER_TASK="cpu:4"
+export SALLOC_TIMELIMIT="03:00:00"
+```
+
+
+Now, whenever you want to launch an interactive session, you just have to load the environment variables and execute the `srun` command:
+
+```{.bash filename="Terminal"}
+source ~/.config/slurm-env/interactive-slurm.env
+srun --pty /bin/bash -i
+```
+
+
+#### Launch interactive session with single command
+
+We can take this a step further to allow us to launch an interactive session by simply running the command `launch-int`.
+
+Add the following to your `~/.bash_aliases` file[^bash_aliases]:
+
+[^bash_aliases]: If `~/.bash_aliases` doesn't exist, you will have to create the file.
+
+    Also verify that your `.bash_aliases` file is sourced in your `~/.bashrc` file, or else this function won't be automatically made available in new terminal sessions.
+  
+    ```{.bash filename="~/.bashrc"}
+    # User specific aliases and functions
+    if [ -f ~/.bash_aliases ]; then
+        . ~/.bash_aliases
+    fi
+    ```
+    
+    Note that `~/.bashrc` and `~/.bash_aliases` are special filenames for bash.
+    These should be used by convention.
+
+
+```{.bash filename="~/.bash_aliases"}
+# Launch an interactive session on a compute node
+function launch-int {
+    source ~/.config/slurm-env/interactive-slurm.env
+    srun "${@}" --pty /bin/bash -i # <1>
+}
+```
+1. The `"${@}"` let's us pass any argument to `srun` so that we can add additional configure or override configuration that is in our environment variables.
+For Slurm commands like `srun`, command line arguments override values stored in environment variables.
+
+
+Launching an interactive compute session is now as quick and simple as running a single command:
+
+```{.bash filename="Terminal"}
+launch-int
+```
