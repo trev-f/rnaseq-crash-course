@@ -20,6 +20,40 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -145,6 +179,10 @@ ul.task-list li input[type="checkbox"] {
   <li><a href="#isaac-ng" id="toc-isaac-ng" class="nav-link active" data-scroll-target="#isaac-ng">ISAAC-NG</a>
   <ul class="collapse">
   <li><a href="#access-and-login" id="toc-access-and-login" class="nav-link" data-scroll-target="#access-and-login">Access and login</a></li>
+  <li><a href="#running-jobs" id="toc-running-jobs" class="nav-link" data-scroll-target="#running-jobs">Running jobs</a>
+  <ul class="collapse">
+  <li><a href="#interactive-sessions" id="toc-interactive-sessions" class="nav-link" data-scroll-target="#interactive-sessions">Interactive sessions</a></li>
+  </ul></li>
   </ul></li>
   </ul>
 </nav>
@@ -175,12 +213,115 @@ alpha stage warning
 <h2 class="anchored" data-anchor-id="access-and-login">Access and login</h2>
 <p>Easiest: Browser login through Open OnDemand</p>
 <p><a href="https://login.isaac.utk.edu/" class="uri">https://login.isaac.utk.edu/</a></p>
+</section>
+<section id="running-jobs" class="level2">
+<h2 class="anchored" data-anchor-id="running-jobs">Running jobs</h2>
+<p>Tasks that utilize a lot of computing resources should <strong>never</strong> be run on the login nodes. Any tasks beyond basic ones such as file editing and management, code compliation, and job submission must be run on compute nodes.</p>
+<section id="interactive-sessions" class="level3">
+<h3 class="anchored" data-anchor-id="interactive-sessions">Interactive sessions</h3>
+<p>One way to run jobs on compute nodes is launch an interactive session. Interactive sessions allow us to access and interact with compute nodes through the terminal in essentially the same way we interact with the login node.</p>
+<p>The main benefit of interactive sessions is just that – we can utilize the resources that are available on ISAAC-NG by directly interacting with them. This makes interactive sessions ideal for short sessions such as testing commands and developing scripts because we can directly run commands on a compute node without the need to wait for Slurm to allocate resources, configure jobs, and setup environments every time we tweak a program. However, interactive sessions are killed when we disconnect from the terminal, so for longer running tasks batch jobs are recommended.</p>
+<p>The command <code>srun --pty /bin/bash -i</code> is my preferred way of launching an interactive session, and this is how we will launch jobs in this crash course<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>. However, ISAAC-NG requires us to explicitly provide an account and a valid partition–QOS combination. Because interactive sessions are designed to be short-lived, we typically want to run them on the short partition and QOS so that they are launched more quickly and so we’re not taking up resources from other partitions.</p>
+<p>Here is a typical full command that we can use to launch an interactive session:</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>Terminal</strong></pre>
+</div>
+<div class="sourceCode" id="cb1" data-filename="Terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">srun</span> <span class="dt">\</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--account</span> ACF-UTK0011 <span class="dt">\</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--partition</span> short <span class="dt">\</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--qos</span> short <span class="dt">\</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--cpus-per-task</span> 4 <span class="dt">\</span></span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">--pty</span> <span class="dt">\</span></span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>  /bin/bash <span class="at">-i</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<section id="launch-interactive-sessions-with-environment-variables" class="level4">
+<h4 class="anchored" data-anchor-id="launch-interactive-sessions-with-environment-variables">Launch interactive sessions with environment variables</h4>
+<p>The whole point of running interactive jobs is to quickly and easily get a job on a compute node, but entering <code>srun</code> command above is anything but quick and easy. Luckily with Slurm we can make things easier on ourselves by using <a href="https://effective-shell.com/part-3-manipulating-text/variables-reading-input-and-mathematics/#shell-variables-and-environment-variables">environment variables</a>. Slurm commands such as <code>srun</code> and <code>salloc</code> can use specific environment variables to configure resource requests for jobs so that we don’t have to explicitly supply them on the command line. We will also make use of setting these environment variables inside of a config file so that we don’t have to type them in manually every time we want to set them.</p>
+<p>The first step is to create the config file of Slurm environment variables for interactive session<a href="#fn2" class="footnote-ref" id="fnref2" role="doc-noteref"><sup>2</sup></a>:</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>~/.config/slurm-env/interactive-slurm.env</strong></pre>
+</div>
+<div class="sourceCode" id="cb2" data-filename="~/.config/slurm-env/interactive-slurm.env"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="co"># srun uses prefix 'SLURM_'</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a><span class="co"># https://slurm.schedmd.com/srun.html#SECTION_INPUT-ENVIRONMENT-VARIABLES</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">SLURM_ACCOUNT</span><span class="op">=</span><span class="st">"ACF-UTK0011"</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">SLURM_PARTITION</span><span class="op">=</span><span class="st">"short"</span></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">SLURM_QOS</span><span class="op">=</span><span class="st">"short"</span></span>
+<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">SLURM_TRES_PER_TASK</span><span class="op">=</span><span class="st">"cpu:4"</span></span>
+<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">SLURM_TIMELIMIT</span><span class="op">=</span><span class="st">"03:00:00"</span></span>
+<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a><span class="co"># salloc uses prefix 'SALLOC_'</span></span>
+<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a><span class="co"># https://slurm.schedmd.com/salloc.html#lbAI</span></span>
+<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">SALLOC_ACCOUNT</span><span class="op">=</span><span class="st">"ACF-UTK0011"</span></span>
+<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">SALLOC_PARTITION</span><span class="op">=</span><span class="st">"short"</span></span>
+<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">SALLOC_QOS</span><span class="op">=</span><span class="st">"short"</span></span>
+<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">SALLOC_TRES_PER_TASK</span><span class="op">=</span><span class="st">"cpu:4"</span></span>
+<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a><span class="bu">export</span> <span class="va">SALLOC_TIMELIMIT</span><span class="op">=</span><span class="st">"03:00:00"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Now, whenever you want to launch an interactive session, you just have to load the environment variables and execute the <code>srun</code> command:</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>Terminal</strong></pre>
+</div>
+<div class="sourceCode" id="cb3" data-filename="Terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="bu">source</span> ~/.config/slurm-env/interactive-slurm.env</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="ex">srun</span> <span class="at">--pty</span> /bin/bash <span class="at">-i</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="launch-interactive-session-with-single-command" class="level4">
+<h4 class="anchored" data-anchor-id="launch-interactive-session-with-single-command">Launch interactive session with single command</h4>
+<p>We can take this a step further to allow us to launch an interactive session by simply running the command <code>launch-int</code>.</p>
+<p>Add the following to your <code>~/.bash_aliases</code> file<a href="#fn3" class="footnote-ref" id="fnref3" role="doc-noteref"><sup>3</sup></a>:</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>~/.bash_aliases</strong></pre>
+</div>
+<div class="sourceCode" id="annotated-cell-4" data-filename="~/.bash_aliases"><pre class="sourceCode bash code-annotation-code code-with-copy code-annotated"><code class="sourceCode bash"><span id="annotated-cell-4-1"><a href="#annotated-cell-4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Launch an interactive session on a compute node</span></span>
+<span id="annotated-cell-4-2"><a href="#annotated-cell-4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span><span class="fu"> launch-int</span> <span class="kw">{</span></span>
+<span id="annotated-cell-4-3"><a href="#annotated-cell-4-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">source</span> ~/.config/slurm-env/interactive-slurm.env</span>
+<a class="code-annotation-anchor" data-target-cell="annotated-cell-4" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-4-4" class="code-annotation-target"><a href="#annotated-cell-4-4" aria-hidden="true" tabindex="-1"></a>    <span class="ex">srun</span> <span class="st">"</span><span class="va">${@}</span><span class="st">"</span> <span class="at">--pty</span> /bin/bash <span class="at">-i</span></span>
+<span id="annotated-cell-4-5"><a href="#annotated-cell-4-5" aria-hidden="true" tabindex="-1"></a><span class="kw">}</span></span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<dl class="code-annotation-container-grid">
+<dt data-target-cell="annotated-cell-4" data-target-annotation="1">1</dt>
+<dd>
+<span data-code-cell="annotated-cell-4" data-code-lines="4" data-code-annotation="1">The <code>"${@}"</code> let’s us pass any argument to <code>srun</code> so that we can add additional configure or override configuration that is in our environment variables. For Slurm commands like <code>srun</code>, command line arguments override values stored in environment variables.</span>
+</dd>
+</dl>
+<p>Launching an interactive compute session is now as quick and simple as running a single command:</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>Terminal</strong></pre>
+</div>
+<div class="sourceCode" id="cb5" data-filename="Terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="ex">launch-int</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
 
 
 </section>
 </section>
+</section>
+</section>
 
-</main> <!-- /main -->
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p><code>salloc</code> is the officially recommended method for launching interactive sessions. I find <code>salloc</code> less user friendly as it requires us to SSH into the reserved compute node to access our job which moves us into our home directory. <code>srun --pty /bin/bash -i</code> drops us straight into our interactive session inside our current working directory without having to run any other commands.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn2"><p>If you don’t have a <code>slurm-env</code> directory you will have to create it with <code>mkdir -p ~/.config/slurm-env</code>. There isn’t anything special about this directory or file name, but it’s good practice to put config files like this inside a subdirectory of <code>~/.config</code>.<a href="#fnref2" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+<li id="fn3"><p>If <code>~/.bash_aliases</code> doesn’t exist, you will have to create the file.</p>
+<p>Also verify that your <code>.bash_aliases</code> file is sourced in your <code>~/.bashrc</code> file, or else this function won’t be automatically made available in new terminal sessions.</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>~/.bashrc</strong></pre>
+</div>
+<div class="sourceCode" id="cb4" data-filename="~/.bashrc"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># User specific aliases and functions</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="cf">if</span> <span class="bu">[</span> <span class="ot">-f</span> ~/.bash_aliases <span class="bu">]</span><span class="kw">;</span> <span class="cf">then</span></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    <span class="bu">.</span> ~/.bash_aliases</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="cf">fi</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+<p>Note that <code>~/.bashrc</code> and <code>~/.bash_aliases</code> are special filenames for bash. These should be used by convention.<a href="#fnref3" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
