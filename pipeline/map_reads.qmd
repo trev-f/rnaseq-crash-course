@@ -149,8 +149,4 @@ STAR \
   --runThreadN "${SLURM_CPUS_PER_TASK:-1}" \
   --genomeFastaFiles "${unzipped_dir}/genome.fasta" \
   --sjdbGTFfile "${unzipped_dir}/annotations.gtf"
-
-# remove the named pipes
-unlink genome
-unlink annotations
 ```
