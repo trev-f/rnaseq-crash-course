@@ -35,39 +35,60 @@
     "text": "fastp sbatch script\nRun fastp in parallel using --ntasks and srun.\n\n\ntrim_reads_fastp.sh\n\n#!/bin/bash\n\n#SBATCH --job-name=trim_reads_fastp\n#SBATCH --ntasks=8\n#SBATCH --cpus-per-task=1\n#SBATCH --mem=4GB\n#SBATCH --time=00-00:30:00\n&lt;... Remaining constant SBATCH flags ...&gt;\n\n\n#######################################\n# Constants\n#######################################\n# Array of raw fastq files\nreadonly fastqs=(data/reads/raw/*.fastq.gz)\n# Output directory paths\nreadonly out_data_dir=\"data/reads/trim\"\nreadonly out_reports_dir=\"reports/fastp\"\n\n\n#######################################\n# Load software\n#######################################\n# echo to stderr\nfunction errcho {\n    &gt;&2 echo \"${@}\"\n}\nfunction fastp {\n  local image_uri=https://depot.galaxyproject.org/singularity/fastp:0.23.4--hadf994f_3\n  apptainer exec \"${image_uri}\" fastp \"${@}\"\n}\n\n\n#######################################\n# Main program.\n#######################################\nfor fastq in \"${fastqs[@]}\"; do\n  errcho \"Trim reads: ${fastq}\"\n  sample_name=$(basename $fastq .fastq.gz)\n  srun --ntasks 1 --cpus-per-task 4 \\\n    fastp \\\n    --thread \"${SLURM_CPUS_PER_TASK}\" \\\n    --in1 \"${fastq}\" \\\n    --out1 \"${out_data_dir}/${sample_name}_trimmed.fastq.gz\" \\\n    --json \"${out_reports_dir}/${sample_name}_fastp.json\" \\\n    --html \"${out_reports_dir}/${sample_name}_fastp.html\" \\\n    &\ndone\nwait"
   },
   {
-    "objectID": "index.html",
-    "href": "index.html",
-    "title": "RNA-seq Crash Course",
-    "section": "",
-    "text": "alpha stage warning\n\n\n\nThis website is in its alpha stage. All pages are under active development and are subject to change at any time without warning.\n\n\n\n\n\n\n\nRNA-seq Crash Course\nThis is the website for the RNA-seq Crash Course by the University of Tennessee Institute of Agriculture Genomics Center."
-  },
-  {
-    "objectID": "computing/isaac-ng.html",
-    "href": "computing/isaac-ng.html",
-    "title": "ISAAC-NG",
+    "objectID": "pipeline/map_reads.html",
+    "href": "pipeline/map_reads.html",
+    "title": "Map Reads",
     "section": "",
     "text": "alpha stage warning\n\n\n\nThis website is in its alpha stage. All pages are under active development and are subject to change at any time without warning."
   },
   {
-    "objectID": "computing/isaac-ng.html#access-and-login",
-    "href": "computing/isaac-ng.html#access-and-login",
-    "title": "ISAAC-NG",
-    "section": "Access and login",
-    "text": "Access and login\nEasiest: Browser login through Open OnDemand\nhttps://login.isaac.utk.edu/"
+    "objectID": "pipeline/map_reads.html#learning-objectives",
+    "href": "pipeline/map_reads.html#learning-objectives",
+    "title": "Map Reads",
+    "section": "Learning objectives",
+    "text": "Learning objectives\n\nDownload reference genome and annotations\nMap reads to reference genome with STAR\nGenerate index for BAM files\nGenerate QC report for mapped reads"
   },
   {
-    "objectID": "computing/isaac-ng.html#running-jobs",
-    "href": "computing/isaac-ng.html#running-jobs",
-    "title": "ISAAC-NG",
-    "section": "Running jobs",
-    "text": "Running jobs\nTasks that utilize a lot of computing resources should never be run on the login nodes. Any tasks beyond basic ones such as file editing and management, code compliation, and job submission must be run on compute nodes.\n\nInteractive sessions\nOne way to run jobs on compute nodes is launch an interactive session. Interactive sessions allow us to access and interact with compute nodes through the terminal in essentially the same way we interact with the login node.\nThe main benefit of interactive sessions is just that – we can utilize the resources that are available on ISAAC-NG by directly interacting with them. This makes interactive sessions ideal for short sessions such as testing commands and developing scripts because we can directly run commands on a compute node without the need to wait for Slurm to allocate resources, configure jobs, and setup environments every time we tweak a program. However, interactive sessions are killed when we disconnect from the terminal, so for longer running tasks batch jobs are recommended.\nThe command srun --pty /bin/bash -i is my preferred way of launching an interactive session, and this is how we will launch jobs in this crash course1. However, ISAAC-NG requires us to explicitly provide an account and a valid partition–QOS combination. Because interactive sessions are designed to be short-lived, we typically want to run them on the short partition and QOS so that they are launched more quickly and so we’re not taking up resources from other partitions.\nHere is a typical full command that we can use to launch an interactive session:\n\n\nTerminal\n\nsrun \\\n  --account ACF-UTK0011 \\\n  --partition short \\\n  --qos short \\\n  --cpus-per-task 4 \\\n  --pty \\\n  /bin/bash -i\n\n\nLaunch interactive sessions with environment variables\nThe whole point of running interactive jobs is to quickly and easily get a job on a compute node, but entering srun command above is anything but quick and easy. Luckily with Slurm we can make things easier on ourselves by using environment variables. Slurm commands such as srun and salloc can use specific environment variables to configure resource requests for jobs so that we don’t have to explicitly supply them on the command line. We will also make use of setting these environment variables inside of a config file so that we don’t have to type them in manually every time we want to set them.\nThe first step is to create the config file of Slurm environment variables for interactive session2:\n\n\n~/.config/slurm-env/interactive-slurm.env\n\n# srun uses prefix 'SLURM_'\n# https://slurm.schedmd.com/srun.html#SECTION_INPUT-ENVIRONMENT-VARIABLES\nexport SLURM_ACCOUNT=\"ACF-UTK0011\"\nexport SLURM_PARTITION=\"short\"\nexport SLURM_QOS=\"short\"\nexport SLURM_TRES_PER_TASK=\"cpu:4\"\nexport SLURM_TIMELIMIT=\"03:00:00\"\n\n# salloc uses prefix 'SALLOC_'\n# https://slurm.schedmd.com/salloc.html#lbAI\nexport SALLOC_ACCOUNT=\"ACF-UTK0011\"\nexport SALLOC_PARTITION=\"short\"\nexport SALLOC_QOS=\"short\"\nexport SALLOC_TRES_PER_TASK=\"cpu:4\"\nexport SALLOC_TIMELIMIT=\"03:00:00\"\n\nNow, whenever you want to launch an interactive session, you just have to load the environment variables and execute the srun command:\n\n\nTerminal\n\nsource ~/.config/slurm-env/interactive-slurm.env\nsrun --pty /bin/bash -i\n\n\n\nLaunch interactive session with single command\nWe can take this a step further to allow us to launch an interactive session by simply running the command launch-int.\nAdd the following to your ~/.bash_aliases file3:\n\n\n~/.bash_aliases\n\n# Launch an interactive session on a compute node\nfunction launch-int {\n    source ~/.config/slurm-env/interactive-slurm.env\n1    srun \"${@}\" --pty /bin/bash -i\n}\n\n\n1\n\nThe \"${@}\" let’s us pass any argument to srun so that we can add additional configure or override configuration that is in our environment variables. For Slurm commands like srun, command line arguments override values stored in environment variables.\n\n\nLaunching an interactive compute session is now as quick and simple as running a single command:\n\n\nTerminal\n\nlaunch-int"
+    "objectID": "pipeline/map_reads.html#purpose",
+    "href": "pipeline/map_reads.html#purpose",
+    "title": "Map Reads",
+    "section": "Purpose",
+    "text": "Purpose\nMapping high-quality reads to a reference is a fundamental step in a typical RNA-seq analysis.\nThis mapping step assigns a read to the genomic locus that it is (likely) derived from. We can use this mapping information to generate a variety of data for downstream analysis such as determining the expression levels of genes, identifying novel splice sites, and identifying genomic variants1.\nAfter read trimming, we run FastQC on the trimmed reads to make sure the trimming mitigated any issues observed at the raw reads QC step."
   },
   {
-    "objectID": "computing/isaac-ng.html#footnotes",
-    "href": "computing/isaac-ng.html#footnotes",
-    "title": "ISAAC-NG",
+    "objectID": "pipeline/map_reads.html#overview-of-mapping-workflow",
+    "href": "pipeline/map_reads.html#overview-of-mapping-workflow",
+    "title": "Map Reads",
+    "section": "Overview of mapping workflow",
+    "text": "Overview of mapping workflow\n\n\n\n\n\nflowchart LR\n    ref_genome[(Reference\\nGenome)]\n    ref_annotations[(Reference\\nAnnotations)]\n    build_index{STAR\\ngenomeGenerate}\n    ref_index[(Reference\\nIndex)]\n\n    ref_genome --- build_index\n    ref_annotations --- build_index\n    build_index --&gt; ref_index"
+  },
+  {
+    "objectID": "pipeline/map_reads.html#software-usage",
+    "href": "pipeline/map_reads.html#software-usage",
+    "title": "Map Reads",
+    "section": "Software usage",
+    "text": "Software usage\n\nSTAR usage\n\nSoftware availability\nSTAR is available as a module that can be loaded on ISAAC:\n\n\nTerminal\n\nmodule load star/2.7.6a\n\nAlternatively, more recent versions are available as Apptainer containers through BioContainers:\n\n\nTerminal\n\nfunction STAR {\n  local image_uri=\"https://depot.galaxyproject.org/singularity/star%3A2.7.11b--h43eeafb_1\"\n  apptainer exec \"${image_uri}\" STAR \"${@}\"\n}\n\nBoth of the methods above make STAR available through the STAR command.\n\n\n\nCommand usage — Generate genome index\nBasic usage:\n\n\nTerminal\n\nSTAR \\\n  --runMode genomeGenerate \\\n  --genomeFastaFiles genome.fasta \\\n  --sjdbGTFfile annotations.gtf \\\n  --genomeDir STAR"
+  },
+  {
+    "objectID": "pipeline/map_reads.html#scripts",
+    "href": "pipeline/map_reads.html#scripts",
+    "title": "Map Reads",
+    "section": "Scripts",
+    "text": "Scripts\n\nGenerate genome index script\n\n\ngenerate_genome_index.sh\n\n#!/bin/bash\n\n#SBATCH --job-name=generate_genome_index\n#SBATCH --cpus-per-task=8\n#SBATCH --mem=32GB\n#SBATCH --time=00-04:00:00\n&lt;... Remaining constant SBATCH flags ...&gt;\n\n\n#######################################\n# Constants\n#######################################\n# Path to directory where references should be stored\nreadonly references_dir=\"data/references\"\n# Path to directory where STAR genome index should be stored\nreadonly star_genome_dir=\"${references_dir}/STAR\"\n# URL for reference genome in fasta (fna) format\nreadonly genome_url=\"https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/002/263/795/GCF_002263795.3_ARS-UCD2.0/GCF_002263795.3_ARS-UCD2.0_genomic.fna.gz\"\n# URL for reference gene annotations in GTF format\nreadonly annotations_url=\"https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/002/263/795/GCF_002263795.3_ARS-UCD2.0/GCF_002263795.3_ARS-UCD2.0_genomic.gtf.gz\"\n\n\n#######################################\n# Load software\n#######################################\n# echo to stderr\nfunction errcho {\n  &gt;&2 echo \"${@}\"\n}\nfunction STAR {\n  local image_uri=\"https://depot.galaxyproject.org/singularity/star%3A2.7.11b--h43eeafb_1\"\n  apptainer exec \"${image_uri}\" STAR \"${@}\"\n}\n\n\n#######################################\n# Main program\n#######################################\n# create target directories\nmkdir -p \"${references_dir}\"\n\n# download reference genome\nerrcho \"Download reference genome\"\nwget \\\n  --no-clobber \\\n  --directory-prefix=\"${references_dir}\" \\\n  \"${genome_url}\"\n# store the path to the reference genome in a variable\ngenome_path=\"${references_dir}/$(basename \"${genome_url}\")\"\n\n# download reference gene annotations\nerrcho \"Download reference gene annotations\"\nwget \\\n  --no-clobber \\\n  --directory-prefix=\"${references_dir}\" \\\n  \"${annotations_url}\"\n# store the path to the reference genome in a variable\nannotations_path=\"${references_dir}/$(basename \"${annotations_url}\")\"\n\n# decompress gzipped genome and annotations files\n# this is done using a temporary directory for the convenience of not having to manage uncompressed files ourselves\nunzipped_dir=$(mktemp -d)\nzcat \"${genome_path}\" &gt; \"${unzipped_dir}/genome.fasta\"\nzcat \"${annotations_path}\" &gt; \"${unzipped_dir}/annotations.gtf\"\n\n# generate STAR genome index\nerrcho \"Generate STAR genome index\"\nSTAR \\\n  --runMode genomeGenerate \\\n  --genomeDir \"${star_genome_dir}\" \\\n  --runThreadN \"${SLURM_CPUS_PER_TASK:-1}\" \\\n  --genomeFastaFiles \"${unzipped_dir}/genome.fasta\" \\\n  --sjdbGTFfile \"${unzipped_dir}/annotations.gtf\"\n\n# remove the named pipes\nunlink genome\nunlink annotations"
+  },
+  {
+    "objectID": "pipeline/map_reads.html#footnotes",
+    "href": "pipeline/map_reads.html#footnotes",
+    "title": "Map Reads",
     "section": "Footnotes",
-    "text": "Footnotes\n\n\nsalloc is the officially recommended method for launching interactive sessions. I find salloc less user friendly as it requires us to SSH into the reserved compute node to access our job which moves us into our home directory. srun --pty /bin/bash -i drops us straight into our interactive session inside our current working directory without having to run any other commands.↩︎\nIf you don’t have a slurm-env directory you will have to create it with mkdir -p ~/.config/slurm-env. There isn’t anything special about this directory or file name, but it’s good practice to put config files like this inside a subdirectory of ~/.config.↩︎\nIf ~/.bash_aliases doesn’t exist, you will have to create the file.\nAlso verify that your .bash_aliases file is sourced in your ~/.bashrc file, or else this function won’t be automatically made available in new terminal sessions.\n\n\n~/.bashrc\n\n# User specific aliases and functions\nif [ -f ~/.bash_aliases ]; then\n    . ~/.bash_aliases\nfi\n\nNote that ~/.bashrc and ~/.bash_aliases are special filenames for bash. These should be used by convention.↩︎"
+    "text": "Footnotes\n\n\nThe types of analyses we can perform are determined by factors such as availability of genomic resources, library construction, sequencing depth, etc.↩︎"
+  },
+  {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "alpha stage warning\n\n\n\nThis website is in its alpha stage. All pages are under active development and are subject to change at any time without warning.\n\n\n\n\n\n\n\nAbout"
   },
   {
     "objectID": "computing/hpc.html",
@@ -105,11 +126,39 @@
     "text": "Other resources\nMuch of this was motivated by the HBC Training HPC intro. Check out their page especially for thoughts on multithreading and parallelization."
   },
   {
-    "objectID": "about.html",
-    "href": "about.html",
-    "title": "About",
+    "objectID": "computing/isaac-ng.html",
+    "href": "computing/isaac-ng.html",
+    "title": "ISAAC-NG",
     "section": "",
-    "text": "alpha stage warning\n\n\n\nThis website is in its alpha stage. All pages are under active development and are subject to change at any time without warning.\n\n\n\n\n\n\n\nAbout"
+    "text": "alpha stage warning\n\n\n\nThis website is in its alpha stage. All pages are under active development and are subject to change at any time without warning."
+  },
+  {
+    "objectID": "computing/isaac-ng.html#access-and-login",
+    "href": "computing/isaac-ng.html#access-and-login",
+    "title": "ISAAC-NG",
+    "section": "Access and login",
+    "text": "Access and login\nEasiest: Browser login through Open OnDemand\nhttps://login.isaac.utk.edu/"
+  },
+  {
+    "objectID": "computing/isaac-ng.html#running-jobs",
+    "href": "computing/isaac-ng.html#running-jobs",
+    "title": "ISAAC-NG",
+    "section": "Running jobs",
+    "text": "Running jobs\nTasks that utilize a lot of computing resources should never be run on the login nodes. Any tasks beyond basic ones such as file editing and management, code compliation, and job submission must be run on compute nodes.\n\nInteractive sessions\nOne way to run jobs on compute nodes is launch an interactive session. Interactive sessions allow us to access and interact with compute nodes through the terminal in essentially the same way we interact with the login node.\nThe main benefit of interactive sessions is just that – we can utilize the resources that are available on ISAAC-NG by directly interacting with them. This makes interactive sessions ideal for short sessions such as testing commands and developing scripts because we can directly run commands on a compute node without the need to wait for Slurm to allocate resources, configure jobs, and setup environments every time we tweak a program. However, interactive sessions are killed when we disconnect from the terminal, so for longer running tasks batch jobs are recommended.\nThe command srun --pty /bin/bash -i is my preferred way of launching an interactive session, and this is how we will launch jobs in this crash course1. However, ISAAC-NG requires us to explicitly provide an account and a valid partition–QOS combination. Because interactive sessions are designed to be short-lived, we typically want to run them on the short partition and QOS so that they are launched more quickly and so we’re not taking up resources from other partitions.\nHere is a typical full command that we can use to launch an interactive session:\n\n\nTerminal\n\nsrun \\\n  --account ACF-UTK0011 \\\n  --partition short \\\n  --qos short \\\n  --cpus-per-task 4 \\\n  --pty \\\n  /bin/bash -i\n\n\nLaunch interactive sessions with environment variables\nThe whole point of running interactive jobs is to quickly and easily get a job on a compute node, but entering srun command above is anything but quick and easy. Luckily with Slurm we can make things easier on ourselves by using environment variables. Slurm commands such as srun and salloc can use specific environment variables to configure resource requests for jobs so that we don’t have to explicitly supply them on the command line. We will also make use of setting these environment variables inside of a config file so that we don’t have to type them in manually every time we want to set them.\nThe first step is to create the config file of Slurm environment variables for interactive session2:\n\n\n~/.config/slurm-env/interactive-slurm.env\n\n# srun uses prefix 'SLURM_'\n# https://slurm.schedmd.com/srun.html#SECTION_INPUT-ENVIRONMENT-VARIABLES\nexport SLURM_ACCOUNT=\"ACF-UTK0011\"\nexport SLURM_PARTITION=\"short\"\nexport SLURM_QOS=\"short\"\nexport SLURM_TRES_PER_TASK=\"cpu:4\"\nexport SLURM_TIMELIMIT=\"03:00:00\"\n\n# salloc uses prefix 'SALLOC_'\n# https://slurm.schedmd.com/salloc.html#lbAI\nexport SALLOC_ACCOUNT=\"ACF-UTK0011\"\nexport SALLOC_PARTITION=\"short\"\nexport SALLOC_QOS=\"short\"\nexport SALLOC_TRES_PER_TASK=\"cpu:4\"\nexport SALLOC_TIMELIMIT=\"03:00:00\"\n\nNow, whenever you want to launch an interactive session, you just have to load the environment variables and execute the srun command:\n\n\nTerminal\n\nsource ~/.config/slurm-env/interactive-slurm.env\nsrun --pty /bin/bash -i\n\n\n\nLaunch interactive session with single command\nWe can take this a step further to allow us to launch an interactive session by simply running the command launch-int.\nAdd the following to your ~/.bash_aliases file3:\n\n\n~/.bash_aliases\n\n# Launch an interactive session on a compute node\nfunction launch-int {\n    source ~/.config/slurm-env/interactive-slurm.env\n1    srun \"${@}\" --pty /bin/bash -i\n}\n\n\n1\n\nThe \"${@}\" let’s us pass any argument to srun so that we can add additional configure or override configuration that is in our environment variables. For Slurm commands like srun, command line arguments override values stored in environment variables.\n\n\nLaunching an interactive compute session is now as quick and simple as running a single command:\n\n\nTerminal\n\nlaunch-int"
+  },
+  {
+    "objectID": "computing/isaac-ng.html#footnotes",
+    "href": "computing/isaac-ng.html#footnotes",
+    "title": "ISAAC-NG",
+    "section": "Footnotes",
+    "text": "Footnotes\n\n\nsalloc is the officially recommended method for launching interactive sessions. I find salloc less user friendly as it requires us to SSH into the reserved compute node to access our job which moves us into our home directory. srun --pty /bin/bash -i drops us straight into our interactive session inside our current working directory without having to run any other commands.↩︎\nIf you don’t have a slurm-env directory you will have to create it with mkdir -p ~/.config/slurm-env. There isn’t anything special about this directory or file name, but it’s good practice to put config files like this inside a subdirectory of ~/.config.↩︎\nIf ~/.bash_aliases doesn’t exist, you will have to create the file.\nAlso verify that your .bash_aliases file is sourced in your ~/.bashrc file, or else this function won’t be automatically made available in new terminal sessions.\n\n\n~/.bashrc\n\n# User specific aliases and functions\nif [ -f ~/.bash_aliases ]; then\n    . ~/.bash_aliases\nfi\n\nNote that ~/.bashrc and ~/.bash_aliases are special filenames for bash. These should be used by convention.↩︎"
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "RNA-seq Crash Course",
+    "section": "",
+    "text": "alpha stage warning\n\n\n\nThis website is in its alpha stage. All pages are under active development and are subject to change at any time without warning.\n\n\n\n\n\n\n\nRNA-seq Crash Course\nThis is the website for the RNA-seq Crash Course by the University of Tennessee Institute of Agriculture Genomics Center."
   },
   {
     "objectID": "pipeline/raw_fastqc.html",

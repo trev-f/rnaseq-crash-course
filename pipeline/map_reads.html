@@ -100,6 +100,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     "search-label": "Search"
   }
 }</script>
+<script src="../site_libs/quarto-diagram/mermaid.min.js"></script>
+<script src="../site_libs/quarto-diagram/mermaid-init.js"></script>
+<link href="../site_libs/quarto-diagram/mermaid.css" rel="stylesheet">
 
 
 <link rel="stylesheet" href="../styles.css">
@@ -180,19 +183,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#raw-reads-fastqc" id="toc-raw-reads-fastqc" class="nav-link active" data-scroll-target="#raw-reads-fastqc">Raw Reads FastQC</a>
+  <li><a href="#map-reads" id="toc-map-reads" class="nav-link active" data-scroll-target="#map-reads">Map Reads</a>
   <ul class="collapse">
   <li><a href="#learning-objectives" id="toc-learning-objectives" class="nav-link" data-scroll-target="#learning-objectives">Learning objectives</a></li>
   <li><a href="#purpose" id="toc-purpose" class="nav-link" data-scroll-target="#purpose">Purpose</a></li>
-  <li><a href="#fastqc-usage" id="toc-fastqc-usage" class="nav-link" data-scroll-target="#fastqc-usage">FastQC usage</a>
+  <li><a href="#overview-of-mapping-workflow" id="toc-overview-of-mapping-workflow" class="nav-link" data-scroll-target="#overview-of-mapping-workflow">Overview of mapping workflow</a></li>
+  <li><a href="#software-usage" id="toc-software-usage" class="nav-link" data-scroll-target="#software-usage">Software usage</a>
   <ul class="collapse">
-  <li><a href="#software-availability" id="toc-software-availability" class="nav-link" data-scroll-target="#software-availability">Software availability</a></li>
-  <li><a href="#command-usage" id="toc-command-usage" class="nav-link" data-scroll-target="#command-usage">Command usage</a></li>
+  <li><a href="#star-usage" id="toc-star-usage" class="nav-link" data-scroll-target="#star-usage">STAR usage</a></li>
+  <li><a href="#command-usage-generate-genome-index" id="toc-command-usage-generate-genome-index" class="nav-link" data-scroll-target="#command-usage-generate-genome-index">Command usage — Generate genome index</a></li>
   </ul></li>
-  <li><a href="#multiqc-usage" id="toc-multiqc-usage" class="nav-link" data-scroll-target="#multiqc-usage">MultiQC usage</a>
+  <li><a href="#scripts" id="toc-scripts" class="nav-link" data-scroll-target="#scripts">Scripts</a>
   <ul class="collapse">
-  <li><a href="#software-availability-1" id="toc-software-availability-1" class="nav-link" data-scroll-target="#software-availability-1">Software availability</a></li>
-  <li><a href="#command-usage-1" id="toc-command-usage-1" class="nav-link" data-scroll-target="#command-usage-1">Command usage</a></li>
+  <li><a href="#generate-genome-index-script" id="toc-generate-genome-index-script" class="nav-link" data-scroll-target="#generate-genome-index-script">Generate genome index script</a></li>
   </ul></li>
   </ul></li>
   </ul>
@@ -216,162 +219,186 @@ alpha stage warning
 
 
 
-<section id="raw-reads-fastqc" class="level1">
-<h1>Raw Reads FastQC</h1>
+<section id="map-reads" class="level1">
+<h1>Map Reads</h1>
 <section id="learning-objectives" class="level2">
 <h2 class="anchored" data-anchor-id="learning-objectives">Learning objectives</h2>
 <ul>
-<li>Generate raw reads QC reports with FastQC</li>
-<li>Produce a composite raw reads QC report with MultiQC</li>
+<li>Download reference genome and annotations</li>
+<li>Map reads to reference genome with STAR</li>
+<li>Generate index for BAM files</li>
+<li>Generate QC report for mapped reads</li>
 </ul>
 </section>
 <section id="purpose" class="level2">
 <h2 class="anchored" data-anchor-id="purpose">Purpose</h2>
-<p>Raw reads QC should be performed to ensure that the quality of reads that came off of the sequencing platform is acceptable. FastQC is a straightforward command line tool for generating QC reports for reads in fastq format.</p>
-<p>A few of the metrics we’re most interested in include:</p>
-<ul>
-<li>Total number of reads and bases.</li>
-<li>Average quality along reads.</li>
-<li>Overrepresented sequences.</li>
-<li>Adapter contamination.</li>
-</ul>
+<p>Mapping high-quality reads to a reference is a fundamental step in a typical RNA-seq analysis.</p>
+<p>This mapping step assigns a read to the genomic locus that it is (likely) derived from. We can use this mapping information to generate a variety of data for downstream analysis such as determining the expression levels of genes, identifying novel splice sites, and identifying genomic variants<a href="#fn1" class="footnote-ref" id="fnref1" role="doc-noteref"><sup>1</sup></a>.</p>
+<p>After read trimming, we run FastQC on the trimmed reads to make sure the trimming mitigated any issues observed at the raw reads QC step.</p>
 </section>
-<section id="fastqc-usage" class="level2">
-<h2 class="anchored" data-anchor-id="fastqc-usage">FastQC usage</h2>
-<section id="software-availability" class="level3">
-<h3 class="anchored" data-anchor-id="software-availability">Software availability</h3>
-<p>FastQC is available as a module that can be loaded on ISAAC:</p>
+<section id="overview-of-mapping-workflow" class="level2">
+<h2 class="anchored" data-anchor-id="overview-of-mapping-workflow">Overview of mapping workflow</h2>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div>
+<p></p><figure class="figure"><p></p>
+<div>
+<pre class="mermaid mermaid-js">flowchart LR
+    ref_genome[(Reference\nGenome)]
+    ref_annotations[(Reference\nAnnotations)]
+    build_index{STAR\ngenomeGenerate}
+    ref_index[(Reference\nIndex)]
+
+    ref_genome --- build_index
+    ref_annotations --- build_index
+    build_index --&gt; ref_index
+</pre>
+</div>
+<p></p></figure><p></p>
+</div>
+</div>
+</div>
+</section>
+<section id="software-usage" class="level2">
+<h2 class="anchored" data-anchor-id="software-usage">Software usage</h2>
+<section id="star-usage" class="level3">
+<h3 class="anchored" data-anchor-id="star-usage">STAR usage</h3>
+<section id="software-availability" class="level4">
+<h4 class="anchored" data-anchor-id="software-availability">Software availability</h4>
+<p>STAR is available as a module that can be loaded on ISAAC:</p>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>Terminal</strong></pre>
 </div>
-<div class="sourceCode" id="cb1" data-filename="Terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load fastqc/0.11.9</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb1" data-filename="Terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="ex">module</span> load star/2.7.6a</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 <p>Alternatively, more recent versions are available as Apptainer containers through BioContainers:</p>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>Terminal</strong></pre>
 </div>
-<div class="sourceCode" id="cb2" data-filename="Terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span><span class="fu"> fastqc</span> <span class="kw">{</span></span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="bu">local</span> <span class="va">image_uri</span><span class="op">=</span>https://depot.galaxyproject.org/singularity/fastqc:0.12.1--hdfd78af_0</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="ex">apptainer</span> exec <span class="st">"</span><span class="va">${image_uri}</span><span class="st">"</span> fastqc <span class="st">"</span><span class="va">${@}</span><span class="st">"</span></span>
+<div class="sourceCode" id="cb2" data-filename="Terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span><span class="fu"> STAR</span> <span class="kw">{</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="bu">local</span> <span class="va">image_uri</span><span class="op">=</span><span class="st">"https://depot.galaxyproject.org/singularity/star%3A2.7.11b--h43eeafb_1"</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="ex">apptainer</span> exec <span class="st">"</span><span class="va">${image_uri}</span><span class="st">"</span> STAR <span class="st">"</span><span class="va">${@}</span><span class="st">"</span></span>
 <span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a><span class="kw">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
+<p>Both of the methods above make STAR available through the <code>STAR</code> command.</p>
 </section>
-<section id="command-usage" class="level3">
-<h3 class="anchored" data-anchor-id="command-usage">Command usage</h3>
-<p>Both of the methods above make FastQC available through the <code>fastqc</code> command.</p>
+</section>
+<section id="command-usage-generate-genome-index" class="level3">
+<h3 class="anchored" data-anchor-id="command-usage-generate-genome-index">Command usage — Generate genome index</h3>
 <p>Basic usage:</p>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
 <pre><strong>Terminal</strong></pre>
 </div>
-<div class="sourceCode" id="annotated-cell-3" data-filename="Terminal"><pre class="sourceCode bash code-annotation-code code-with-copy code-annotated"><code class="sourceCode bash"><a class="code-annotation-anchor" data-target-cell="annotated-cell-3" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-3-1" class="code-annotation-target"><a href="#annotated-cell-3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">fastqc</span> sample1.fastq.gz sample2.fastq.gz</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<dl class="code-annotation-container-grid">
-<dt data-target-cell="annotated-cell-3" data-target-annotation="1">1</dt>
-<dd>
-<span data-code-cell="annotated-cell-3" data-code-lines="1" data-code-annotation="1">An arbitrary number of sequence files can be specified. Multiple sequence files must be separated by spaces. In practice we typically run FastQC on (gzipped) fastq files, but other sequence file formats can be used (run <code>fastqc --help</code> for details).</span>
-</dd>
-</dl>
-<p>Useful options:</p>
-<div class="code-with-filename">
-<div class="code-with-filename-file">
-<pre><strong>Terminal</strong></pre>
-</div>
-<div class="sourceCode" id="annotated-cell-4" data-filename="Terminal"><pre class="sourceCode bash code-annotation-code code-with-copy code-annotated"><code class="sourceCode bash"><span id="annotated-cell-4-1"><a href="#annotated-cell-4-1" aria-hidden="true" tabindex="-1"></a><span class="ex">fastqc</span> <span class="dt">\</span></span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-4" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-4-2" class="code-annotation-target"><a href="#annotated-cell-4-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--outdir</span> reports/fastqc <span class="dt">\</span></span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-4" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-4-3" class="code-annotation-target"><a href="#annotated-cell-4-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--threads</span> 2 <span class="dt">\</span></span>
-<span id="annotated-cell-4-4"><a href="#annotated-cell-4-4" aria-hidden="true" tabindex="-1"></a>  sample1.fastq.gz sample2.fastq.gz</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<dl class="code-annotation-container-grid">
-<dt data-target-cell="annotated-cell-4" data-target-annotation="1">1</dt>
-<dd>
-<span data-code-cell="annotated-cell-4" data-code-lines="2" data-code-annotation="1">The directory to write output files into. If this directory does not exist, the command will fail with an error.</span>
-</dd>
-<dt data-target-cell="annotated-cell-4" data-target-annotation="2">2</dt>
-<dd>
-<span data-code-cell="annotated-cell-4" data-code-lines="3" data-code-annotation="2">The number of threads to use. This is the number of files that FastQC will process simultaneously.</span>
-</dd>
-</dl>
-</section>
-</section>
-<section id="multiqc-usage" class="level2">
-<h2 class="anchored" data-anchor-id="multiqc-usage">MultiQC usage</h2>
-<section id="software-availability-1" class="level3">
-<h3 class="anchored" data-anchor-id="software-availability-1">Software availability</h3>
-<div class="callout callout-style-default callout-note callout-titled" title="MultiQC version">
-<div class="callout-header d-flex align-content-center">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-title-container flex-fill">
-MultiQC version
-</div>
-</div>
-<div class="callout-body-container callout-body">
-<p>MultiQC had a significant update around v1.19 that made its reports significantly better from a user standpoint, especially when working with a large number of samples. I strongly recommend using the most recent MultiQC version (v1.21 at the time of writing this).</p>
-</div>
-</div>
-<p>MultiQC is available as Apptainer containers through BioContainers:</p>
-<div class="code-with-filename">
-<div class="code-with-filename-file">
-<pre><strong>Terminal</strong></pre>
-</div>
-<div class="sourceCode" id="cb3" data-filename="Terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span><span class="fu"> multiqc</span> <span class="kw">{</span></span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="bu">local</span> <span class="va">image_uri</span><span class="op">=</span>https://depot.galaxyproject.org/singularity/multiqc:1.21--pyhdfd78af_0</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="ex">apptainer</span> exec <span class="st">"</span><span class="va">${image_uri}</span><span class="st">"</span> multiqc <span class="st">"</span><span class="va">${@}</span><span class="st">"</span></span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="kw">}</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb3" data-filename="Terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="ex">STAR</span> <span class="dt">\</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--runMode</span> genomeGenerate <span class="dt">\</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--genomeFastaFiles</span> genome.fasta <span class="dt">\</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--sjdbGTFfile</span> annotations.gtf <span class="dt">\</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">--genomeDir</span> STAR</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
-<section id="command-usage-1" class="level3">
-<h3 class="anchored" data-anchor-id="command-usage-1">Command usage</h3>
-<p>The method above makes MultiQC available through the <code>multiqc</code> command.</p>
-<p>Basic usage:</p>
+</section>
+<section id="scripts" class="level2">
+<h2 class="anchored" data-anchor-id="scripts">Scripts</h2>
+<section id="generate-genome-index-script" class="level3">
+<h3 class="anchored" data-anchor-id="generate-genome-index-script">Generate genome index script</h3>
 <div class="code-with-filename">
 <div class="code-with-filename-file">
-<pre><strong>Terminal</strong></pre>
+<pre><strong>generate_genome_index.sh</strong></pre>
 </div>
-<div class="sourceCode" id="annotated-cell-6" data-filename="Terminal"><pre class="sourceCode bash code-annotation-code code-with-copy code-annotated"><code class="sourceCode bash"><a class="code-annotation-anchor" data-target-cell="annotated-cell-6" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-6-1" class="code-annotation-target"><a href="#annotated-cell-6-1" aria-hidden="true" tabindex="-1"></a><span class="ex">multiqc</span> .</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode" id="cb4" data-filename="generate_genome_index.sh"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --job-name=generate_genome_index</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --cpus-per-task=8</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mem=32GB</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --time=00-04:00:00</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a><span class="op">&lt;</span>... <span class="ex">Remaining</span> constant SBATCH flags ...<span class="op">&gt;</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co">#######################################</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Constants</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co">#######################################</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Path to directory where references should be stored</span></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="bu">readonly</span> <span class="va">references_dir</span><span class="op">=</span><span class="st">"data/references"</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="co"># Path to directory where STAR genome index should be stored</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a><span class="bu">readonly</span> <span class="va">star_genome_dir</span><span class="op">=</span><span class="st">"</span><span class="va">${references_dir}</span><span class="st">/STAR"</span></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="co"># URL for reference genome in fasta (fna) format</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="bu">readonly</span> <span class="va">genome_url</span><span class="op">=</span><span class="st">"https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/002/263/795/GCF_002263795.3_ARS-UCD2.0/GCF_002263795.3_ARS-UCD2.0_genomic.fna.gz"</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="co"># URL for reference gene annotations in GTF format</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="bu">readonly</span> <span class="va">annotations_url</span><span class="op">=</span><span class="st">"https://ftp.ncbi.nlm.nih.gov/genomes/all/GCF/002/263/795/GCF_002263795.3_ARS-UCD2.0/GCF_002263795.3_ARS-UCD2.0_genomic.gtf.gz"</span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a><span class="co">#######################################</span></span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a><span class="co"># Load software</span></span>
+<span id="cb4-25"><a href="#cb4-25" aria-hidden="true" tabindex="-1"></a><span class="co">#######################################</span></span>
+<span id="cb4-26"><a href="#cb4-26" aria-hidden="true" tabindex="-1"></a><span class="co"># echo to stderr</span></span>
+<span id="cb4-27"><a href="#cb4-27" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span><span class="fu"> errcho</span> <span class="kw">{</span></span>
+<span id="cb4-28"><a href="#cb4-28" aria-hidden="true" tabindex="-1"></a>  <span class="op">&gt;&amp;</span><span class="dv">2</span> <span class="bu">echo</span> <span class="st">"</span><span class="va">${@}</span><span class="st">"</span></span>
+<span id="cb4-29"><a href="#cb4-29" aria-hidden="true" tabindex="-1"></a><span class="kw">}</span></span>
+<span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span><span class="fu"> STAR</span> <span class="kw">{</span></span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>  <span class="bu">local</span> <span class="va">image_uri</span><span class="op">=</span><span class="st">"https://depot.galaxyproject.org/singularity/star%3A2.7.11b--h43eeafb_1"</span></span>
+<span id="cb4-32"><a href="#cb4-32" aria-hidden="true" tabindex="-1"></a>  <span class="ex">apptainer</span> exec <span class="st">"</span><span class="va">${image_uri}</span><span class="st">"</span> STAR <span class="st">"</span><span class="va">${@}</span><span class="st">"</span></span>
+<span id="cb4-33"><a href="#cb4-33" aria-hidden="true" tabindex="-1"></a><span class="kw">}</span></span>
+<span id="cb4-34"><a href="#cb4-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-35"><a href="#cb4-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-36"><a href="#cb4-36" aria-hidden="true" tabindex="-1"></a><span class="co">#######################################</span></span>
+<span id="cb4-37"><a href="#cb4-37" aria-hidden="true" tabindex="-1"></a><span class="co"># Main program</span></span>
+<span id="cb4-38"><a href="#cb4-38" aria-hidden="true" tabindex="-1"></a><span class="co">#######################################</span></span>
+<span id="cb4-39"><a href="#cb4-39" aria-hidden="true" tabindex="-1"></a><span class="co"># create target directories</span></span>
+<span id="cb4-40"><a href="#cb4-40" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> <span class="st">"</span><span class="va">${references_dir}</span><span class="st">"</span></span>
+<span id="cb4-41"><a href="#cb4-41" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-42"><a href="#cb4-42" aria-hidden="true" tabindex="-1"></a><span class="co"># download reference genome</span></span>
+<span id="cb4-43"><a href="#cb4-43" aria-hidden="true" tabindex="-1"></a><span class="ex">errcho</span> <span class="st">"Download reference genome"</span></span>
+<span id="cb4-44"><a href="#cb4-44" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> <span class="dt">\</span></span>
+<span id="cb4-45"><a href="#cb4-45" aria-hidden="true" tabindex="-1"></a>  <span class="at">--no-clobber</span> <span class="dt">\</span></span>
+<span id="cb4-46"><a href="#cb4-46" aria-hidden="true" tabindex="-1"></a>  <span class="at">--directory-prefix</span><span class="op">=</span><span class="st">"</span><span class="va">${references_dir}</span><span class="st">"</span> <span class="dt">\</span></span>
+<span id="cb4-47"><a href="#cb4-47" aria-hidden="true" tabindex="-1"></a>  <span class="st">"</span><span class="va">${genome_url}</span><span class="st">"</span></span>
+<span id="cb4-48"><a href="#cb4-48" aria-hidden="true" tabindex="-1"></a><span class="co"># store the path to the reference genome in a variable</span></span>
+<span id="cb4-49"><a href="#cb4-49" aria-hidden="true" tabindex="-1"></a><span class="va">genome_path</span><span class="op">=</span><span class="st">"</span><span class="va">${references_dir}</span><span class="st">/</span><span class="va">$(</span><span class="fu">basename</span> <span class="st">"</span><span class="va">${genome_url}</span><span class="st">"</span><span class="va">)</span><span class="st">"</span></span>
+<span id="cb4-50"><a href="#cb4-50" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-51"><a href="#cb4-51" aria-hidden="true" tabindex="-1"></a><span class="co"># download reference gene annotations</span></span>
+<span id="cb4-52"><a href="#cb4-52" aria-hidden="true" tabindex="-1"></a><span class="ex">errcho</span> <span class="st">"Download reference gene annotations"</span></span>
+<span id="cb4-53"><a href="#cb4-53" aria-hidden="true" tabindex="-1"></a><span class="fu">wget</span> <span class="dt">\</span></span>
+<span id="cb4-54"><a href="#cb4-54" aria-hidden="true" tabindex="-1"></a>  <span class="at">--no-clobber</span> <span class="dt">\</span></span>
+<span id="cb4-55"><a href="#cb4-55" aria-hidden="true" tabindex="-1"></a>  <span class="at">--directory-prefix</span><span class="op">=</span><span class="st">"</span><span class="va">${references_dir}</span><span class="st">"</span> <span class="dt">\</span></span>
+<span id="cb4-56"><a href="#cb4-56" aria-hidden="true" tabindex="-1"></a>  <span class="st">"</span><span class="va">${annotations_url}</span><span class="st">"</span></span>
+<span id="cb4-57"><a href="#cb4-57" aria-hidden="true" tabindex="-1"></a><span class="co"># store the path to the reference genome in a variable</span></span>
+<span id="cb4-58"><a href="#cb4-58" aria-hidden="true" tabindex="-1"></a><span class="va">annotations_path</span><span class="op">=</span><span class="st">"</span><span class="va">${references_dir}</span><span class="st">/</span><span class="va">$(</span><span class="fu">basename</span> <span class="st">"</span><span class="va">${annotations_url}</span><span class="st">"</span><span class="va">)</span><span class="st">"</span></span>
+<span id="cb4-59"><a href="#cb4-59" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-60"><a href="#cb4-60" aria-hidden="true" tabindex="-1"></a><span class="co"># decompress gzipped genome and annotations files</span></span>
+<span id="cb4-61"><a href="#cb4-61" aria-hidden="true" tabindex="-1"></a><span class="co"># this is done using a temporary directory for the convenience of not having to manage uncompressed files ourselves</span></span>
+<span id="cb4-62"><a href="#cb4-62" aria-hidden="true" tabindex="-1"></a><span class="va">unzipped_dir</span><span class="op">=</span><span class="va">$(</span><span class="fu">mktemp</span> <span class="at">-d</span><span class="va">)</span></span>
+<span id="cb4-63"><a href="#cb4-63" aria-hidden="true" tabindex="-1"></a><span class="fu">zcat</span> <span class="st">"</span><span class="va">${genome_path}</span><span class="st">"</span> <span class="op">&gt;</span> <span class="st">"</span><span class="va">${unzipped_dir}</span><span class="st">/genome.fasta"</span></span>
+<span id="cb4-64"><a href="#cb4-64" aria-hidden="true" tabindex="-1"></a><span class="fu">zcat</span> <span class="st">"</span><span class="va">${annotations_path}</span><span class="st">"</span> <span class="op">&gt;</span> <span class="st">"</span><span class="va">${unzipped_dir}</span><span class="st">/annotations.gtf"</span></span>
+<span id="cb4-65"><a href="#cb4-65" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-66"><a href="#cb4-66" aria-hidden="true" tabindex="-1"></a><span class="co"># generate STAR genome index</span></span>
+<span id="cb4-67"><a href="#cb4-67" aria-hidden="true" tabindex="-1"></a><span class="ex">errcho</span> <span class="st">"Generate STAR genome index"</span></span>
+<span id="cb4-68"><a href="#cb4-68" aria-hidden="true" tabindex="-1"></a><span class="ex">STAR</span> <span class="dt">\</span></span>
+<span id="cb4-69"><a href="#cb4-69" aria-hidden="true" tabindex="-1"></a>  <span class="at">--runMode</span> genomeGenerate <span class="dt">\</span></span>
+<span id="cb4-70"><a href="#cb4-70" aria-hidden="true" tabindex="-1"></a>  <span class="at">--genomeDir</span> <span class="st">"</span><span class="va">${star_genome_dir}</span><span class="st">"</span> <span class="dt">\</span></span>
+<span id="cb4-71"><a href="#cb4-71" aria-hidden="true" tabindex="-1"></a>  <span class="at">--runThreadN</span> <span class="st">"</span><span class="va">${SLURM_CPUS_PER_TASK</span><span class="op">:-</span>1<span class="va">}</span><span class="st">"</span> <span class="dt">\</span></span>
+<span id="cb4-72"><a href="#cb4-72" aria-hidden="true" tabindex="-1"></a>  <span class="at">--genomeFastaFiles</span> <span class="st">"</span><span class="va">${unzipped_dir}</span><span class="st">/genome.fasta"</span> <span class="dt">\</span></span>
+<span id="cb4-73"><a href="#cb4-73" aria-hidden="true" tabindex="-1"></a>  <span class="at">--sjdbGTFfile</span> <span class="st">"</span><span class="va">${unzipped_dir}</span><span class="st">/annotations.gtf"</span></span>
+<span id="cb4-74"><a href="#cb4-74" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-75"><a href="#cb4-75" aria-hidden="true" tabindex="-1"></a><span class="co"># remove the named pipes</span></span>
+<span id="cb4-76"><a href="#cb4-76" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span> genome</span>
+<span id="cb4-77"><a href="#cb4-77" aria-hidden="true" tabindex="-1"></a><span class="fu">unlink</span> annotations</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
-<dl class="code-annotation-container-grid">
-<dt data-target-cell="annotated-cell-6" data-target-annotation="1">1</dt>
-<dd>
-<span data-code-cell="annotated-cell-6" data-code-lines="1" data-code-annotation="1">This will traverse through all files and directories in the current working directory (<code>.</code>) and add any files that MultiQC recognizes to the report that it generates.</span>
-</dd>
-</dl>
-<p>Useful options:</p>
-<div class="code-with-filename">
-<div class="code-with-filename-file">
-<pre><strong>Terminal</strong></pre>
-</div>
-<div class="sourceCode" id="annotated-cell-7" data-filename="Terminal"><pre class="sourceCode bash code-annotation-code code-with-copy code-annotated"><code class="sourceCode bash"><span id="annotated-cell-7-1"><a href="#annotated-cell-7-1" aria-hidden="true" tabindex="-1"></a><span class="ex">multiqc</span> <span class="dt">\</span></span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-7" data-target-annotation="1" onclick="event.preventDefault();">1</a><span id="annotated-cell-7-2" class="code-annotation-target"><a href="#annotated-cell-7-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--filename</span> raw_reads_qc <span class="dt">\</span></span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-7" data-target-annotation="2" onclick="event.preventDefault();">2</a><span id="annotated-cell-7-3" class="code-annotation-target"><a href="#annotated-cell-7-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--outdir</span> reports <span class="dt">\</span></span>
-<a class="code-annotation-anchor" data-target-cell="annotated-cell-7" data-target-annotation="3" onclick="event.preventDefault();">3</a><span id="annotated-cell-7-4" class="code-annotation-target"><a href="#annotated-cell-7-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">--title</span> <span class="st">"Raw reads QC"</span> <span class="dt">\</span></span>
-<span id="annotated-cell-7-5"><a href="#annotated-cell-7-5" aria-hidden="true" tabindex="-1"></a>  .</span><div class="code-annotation-gutter-bg"></div><div class="code-annotation-gutter"></div></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-</div>
-<dl class="code-annotation-container-grid">
-<dt data-target-cell="annotated-cell-7" data-target-annotation="1">1</dt>
-<dd>
-<span data-code-cell="annotated-cell-7" data-code-lines="2" data-code-annotation="1">Filename to use for the MultiQC report and data files.</span>
-</dd>
-<dt data-target-cell="annotated-cell-7" data-target-annotation="2">2</dt>
-<dd>
-<span data-code-cell="annotated-cell-7" data-code-lines="3" data-code-annotation="2">The directory to write output files into.</span>
-</dd>
-<dt data-target-cell="annotated-cell-7" data-target-annotation="3">3</dt>
-<dd>
-<span data-code-cell="annotated-cell-7" data-code-lines="4" data-code-annotation="3">A title for the report.</span>
-</dd>
-</dl>
 
 
 </section>
 </section>
 </section>
 
-</main> <!-- /main -->
+
+<div id="quarto-appendix" class="default"><section id="footnotes" class="footnotes footnotes-end-of-document" role="doc-endnotes"><h2 class="anchored quarto-appendix-heading">Footnotes</h2>
+
+<ol>
+<li id="fn1"><p>The types of analyses we can perform are determined by factors such as availability of genomic resources, library construction, sequencing depth, etc.<a href="#fnref1" class="footnote-back" role="doc-backlink">↩︎</a></p></li>
+</ol>
+</section></div></main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
 window.document.addEventListener("DOMContentLoaded", function (event) {
   const toggleBodyColorMode = (bsSheetEl) => {
