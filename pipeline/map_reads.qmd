@@ -136,9 +136,10 @@ wget \
 annotations_path="${references_dir}/$(basename "${annotations_url}")"
 
 # decompress gzipped genome and annotations files
-# this is done using named pipes for the convenience of not having to manage uncompressed files
-mkfifo genome && zcat "${genome_path}" > genome &
-mkfifo annotations && zcat "${annotations_path}" > annotations &
+# this is done using a temporary directory for the convenience of not having to manage uncompressed files ourselves
+unzipped_dir=$(mktemp -d)
+zcat "${genome_path}" > "${unzipped_dir}/genome.fasta"
+zcat "${annotations_path}" > "${unzipped_dir}/annotations.gtf"
 
 # generate STAR genome index
 errcho "Generate STAR genome index"
@@ -146,8 +147,8 @@ STAR \
   --runMode genomeGenerate \
   --genomeDir "${star_genome_dir}" \
   --runThreadN "${SLURM_CPUS_PER_TASK:-1}" \
-  --genomeFastaFiles genome \
-  --sjdbGTFfile annotations
+  --genomeFastaFiles "${unzipped_dir}/genome.fasta" \
+  --sjdbGTFfile "${unzipped_dir}/annotations.gtf"
 
 # remove the named pipes
 unlink genome
