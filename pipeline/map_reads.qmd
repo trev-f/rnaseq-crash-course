@@ -30,6 +30,15 @@ flowchart LR
     ref_genome --- build_index
     ref_annotations --- build_index
     build_index --> ref_index
+
+    reads[(Reads)]
+    mappings[(Mappings)]
+    map_reads{STAR}
+
+    ref_index --- map_reads
+    reads --- map_reads
+    map_reads --> mappings
+
 ```
 
 ## Software usage
