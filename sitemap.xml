@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://trev-f.github.io/rnaseq-crash-course/pipeline/trim_reads.html</loc>
-    <lastmod>2024-05-13T13:31:54.369Z</lastmod>
-  </url>
-  <url>
-    <loc>https://trev-f.github.io/rnaseq-crash-course/pipeline/map_reads.html</loc>
-    <lastmod>2024-05-13T13:31:54.369Z</lastmod>
-  </url>
-  <url>
-    <loc>https://trev-f.github.io/rnaseq-crash-course/about.html</loc>
-    <lastmod>2024-05-13T13:31:54.369Z</lastmod>
-  </url>
-  <url>
     <loc>https://trev-f.github.io/rnaseq-crash-course/computing/hpc.html</loc>
-    <lastmod>2024-05-13T13:31:54.369Z</lastmod>
-  </url>
-  <url>
-    <loc>https://trev-f.github.io/rnaseq-crash-course/computing/isaac-ng.html</loc>
-    <lastmod>2024-05-13T13:31:54.369Z</lastmod>
-  </url>
-  <url>
-    <loc>https://trev-f.github.io/rnaseq-crash-course/index.html</loc>
-    <lastmod>2024-05-13T13:31:54.369Z</lastmod>
+    <lastmod>2024-05-16T17:07:55.702Z</lastmod>
   </url>
   <url>
     <loc>https://trev-f.github.io/rnaseq-crash-course/pipeline/raw_fastqc.html</loc>
-    <lastmod>2024-05-13T13:31:54.369Z</lastmod>
+    <lastmod>2024-05-16T17:07:55.702Z</lastmod>
+  </url>
+  <url>
+    <loc>https://trev-f.github.io/rnaseq-crash-course/pipeline/trim_reads.html</loc>
+    <lastmod>2024-05-16T17:07:55.706Z</lastmod>
+  </url>
+  <url>
+    <loc>https://trev-f.github.io/rnaseq-crash-course/about.html</loc>
+    <lastmod>2024-05-16T17:07:55.702Z</lastmod>
+  </url>
+  <url>
+    <loc>https://trev-f.github.io/rnaseq-crash-course/index.html</loc>
+    <lastmod>2024-05-16T17:07:55.702Z</lastmod>
+  </url>
+  <url>
+    <loc>https://trev-f.github.io/rnaseq-crash-course/pipeline/map_reads.html</loc>
+    <lastmod>2024-05-16T17:07:55.702Z</lastmod>
+  </url>
+  <url>
+    <loc>https://trev-f.github.io/rnaseq-crash-course/computing/isaac-ng.html</loc>
+    <lastmod>2024-05-16T17:07:55.702Z</lastmod>
   </url>
 </urlset>
