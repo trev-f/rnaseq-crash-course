@@ -188,7 +188,8 @@ ln -rs ../02_trim_reads/data/reads/trim/*R1_001_trimmed.fastq.gz "${trim_reads_d
 #SBATCH --job-name=map_reads
 #SBATCH --cpus-per-task=8
 #SBATCH --mem=32GB
-#SBATCH --time=00-04:00:00
+#SBATCH --time=00-00:45:00
+#SBATCH --array=0-112%8
 #<... Remaining constant SBATCH flags ...>
 
 
@@ -196,7 +197,7 @@ ln -rs ../02_trim_reads/data/reads/trim/*R1_001_trimmed.fastq.gz "${trim_reads_d
 # Constants
 #######################################
 # Array of fastq files
-readonly fastqs=(data/reads/trim/H{1,2,3}_*.fastq.gz)
+readonly fastqs=(data/reads/trim/*.fastq.gz)
 # Path to directory where STAR genome index is stored
 readonly star_genome_dir="data/references/STAR"
 # Path to directory where output map (BAM) files from STAR should be stored
@@ -241,30 +242,36 @@ done
 ## store the output as a regular array which we can access by numerical index
 unique_fastq_path_prefixes=($(printf '%s\n' "${!unsorted_unique_fastq_path_prefixes[@]}" | sort))
 
-# print the unique fastq path prefixes
-for fastq_path_prefix in "${unique_fastq_path_prefixes[@]}"
-do
-    errcho "${fastq_path_prefix}"
-    # get prefix for sample name
-    sample_prefix=$(basename "${fastq_path_prefix}")
-    errcho "Sample prefix: ${sample_prefix}"
-    # get paths to fastq files as an array
-    fastq_paths=("${fastq_path_prefix}"*.fastq.gz)
-    oldifs="${IFS}"
-    IFS=','
-    read_files_in="${fastq_paths[*]}"
-    IFS="${oldifs}"
-    errcho "${read_files_in}"
-done
+# calculate the total number of mapping jobs to run
+# this is the number of unique samples which is size (length) of the fastq path prefixes array
+# note that this is not the number of fastq files
+errcho "Total number of mapping jobs to run: ${#unique_fastq_path_prefixes[@]}"
 
-exit
+# get the fastq path prefix for the current array index
+errcho "Array job index: ${i}"
+fastq_path_prefix="${unique_fastq_path_prefixes[$i]}"
+
+errcho "Fastq path prefix: ${fastq_path_prefix}"
+# get prefix for sample name
+sample_prefix=$(basename "${fastq_path_prefix}")
+errcho "Sample prefix: ${sample_prefix}"
+# get paths to fastq files as an array
+fastq_paths=("${fastq_path_prefix}"*.fastq.gz)
+errcho "Fastq files for this sample: ${fastq_paths[@]}"
+# convert the array of fastq file paths into a string of fastq file paths separated by commas
+oldifs="${IFS}"
+IFS=','
+read_files_in="${fastq_paths[*]}"
+IFS="${oldifs}"
+errcho "Reads files input: ${read_files_in}"
 
 # map reads with STAR
 STAR \
-  --runThreadN ${SLURM_CPUS_PER_TASK:-1} \
-  --genomeDir ${star_genome_dir} \
-  --readFilesIn ${fastqs} \
-  --readFilesCommand gunzip -c \
-  --outFileNamePrefix ${stemName}_ \
-  ${args}
+    --runThreadN "${SLURM_CPUS_PER_TASK:-1}" \
+    --genomeDir "${star_genome_dir}" \
+    --readFilesIn "${read_files_in}" \
+    --readFilesCommand gunzip -c \
+    --outFileNamePrefix "${map_dir}/${sample_prefix}" \
+    --outSAMtype BAM Unsorted
+errcho
 ```
