@@ -283,7 +283,7 @@ errcho
 ```
 
 
-### Map reads to genome index
+### QC mappings
 
 ``` {.bash filename="star_qc.sh"}
 #!/bin/bash
