@@ -1,0 +1,24 @@
+# Quantify reads within genes
+
+## Objectives
+
+- Generate table of counts within genes
+
+## Purpose
+
+Counting reads transforms the sequencing data that we have been processing into quantities that we can readily analyze.
+
+## Overview of counting workflow
+
+```{mermaid}
+flowchart LR
+    ref_annotations[(Reference\nAnnotations)]
+    mappings[(Mappings)]
+    counts_table[(Counts\ntable)]
+    counts_summary[(Counts\nsummary)]
+    count_reads{featureCounts}
+
+    mappings --- count_reads
+    ref_annotations --- count_reads
+    count_reads --> counts_table
+```
