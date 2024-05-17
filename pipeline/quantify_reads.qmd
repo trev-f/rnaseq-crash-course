@@ -22,3 +22,44 @@ flowchart LR
     ref_annotations --- count_reads
     count_reads --> counts_table
 ```
+
+## Scripts
+
+### Link files
+
+We count reads that have been mapped to the reference genome.
+Therefore, we create links to our mappings files that are located in the mappings directory of the read mapping step.
+
+We also need the reference gene annotations in GTF format.
+We downloaded this in the read mapping step, so we will like in that file as well.
+
+``` {.bash filename="link_files.sh"}
+#!/usr/bin/env bash
+
+# Set constants
+# make a directory to hold links to trimmed reads
+readonly mappings_dir="data/mappings"
+readonly references_dir="data/references"
+
+mkdir -p "${mappings_dir}" "${references_dir}"
+
+# make links to mappings
+ln -rs ../03_map_reads/data/mappings/*.bam "${mappings_dir}"
+# make link to reference GTF file
+ln -rs ../03_map_reads/data/references/GCF_002263795.3_ARS-UCD2.0_genomic.gtf.gz "${references_dir}"
+```
+
+### Count reads
+
+``` {.bash filename="count_reads.sh"}
+#!/bin/bash
+
+#SBATCH --job-name=generate_genome_index
+#SBATCH --cpus-per-task=8
+#SBATCH --mem=48GB
+#SBATCH --time=00-04:00:00
+<... Remaining constant SBATCH flags ...>
+
+
+
+```
