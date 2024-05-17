@@ -299,7 +299,7 @@ errcho
 # Constants
 #######################################
 readonly star_logs_dir="data/mappings"
-readonly reports_dir="test/reports/star"
+readonly reports_dir="reports/star"
 
 
 #######################################
