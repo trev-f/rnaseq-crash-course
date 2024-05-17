@@ -33,12 +33,18 @@ flowchart LR
 
     reads[(Reads)]
     mappings[(Mappings)]
+    mapping_log[(Mapping\nlog)]
     map_reads{STAR}
 
     ref_index --- map_reads
     reads --- map_reads
     map_reads --> mappings
+    map_reads --> mapping_log
 
+    multiqc{MultiQC}
+    mapping_qc_report((("Mapping\nQC\nreport")))
+
+    mapping_log --- multiqc --> mapping_qc_report
 ```
 
 ## Software usage
@@ -274,4 +280,47 @@ STAR \
     --outFileNamePrefix "${map_dir}/${sample_prefix}" \
     --outSAMtype BAM Unsorted
 errcho
+```
+
+
+### Map reads to genome index
+
+``` {.bash filename="star_qc.sh"}
+#!/bin/bash
+
+#SBATCH --job-name=star_qc
+#SBATCH --cpus-per-task=1
+#SBATCH --mem=10GB
+#SBATCH --time=00-00:15:00
+#<... Remaining constant SBATCH flags ...>
+
+
+#######################################
+# Constants
+#######################################
+readonly star_logs_dir="data/mappings"
+readonly reports_dir="test/reports/star"
+
+
+#######################################
+# Load software
+#######################################
+function multiqc {
+	local image_uri=https://depot.galaxyproject.org/singularity/multiqc:1.21--pyhdfd78af_0
+	apptainer exec "${image_uri}" multiqc "${@}"
+}
+
+
+#######################################
+# Main program
+#######################################
+# create target directories
+mkdir -p "${reports_dir}"
+
+# Run MultiQC for STAR logs
+multiqc \
+  --filename _star_qc \
+  --outdir "${reports_dir}" \
+  --title "STAR QC" \
+  "${star_logs_dir}"
 ```
