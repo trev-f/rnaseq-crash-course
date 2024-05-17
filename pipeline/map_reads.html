@@ -198,6 +198,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#generate-genome-index-script" id="toc-generate-genome-index-script" class="nav-link" data-scroll-target="#generate-genome-index-script">Generate genome index script</a></li>
   <li><a href="#link-trimmed-reads" id="toc-link-trimmed-reads" class="nav-link" data-scroll-target="#link-trimmed-reads">Link trimmed reads</a></li>
   <li><a href="#map-reads-to-genome-index" id="toc-map-reads-to-genome-index" class="nav-link" data-scroll-target="#map-reads-to-genome-index">Map reads to genome index</a></li>
+  <li><a href="#map-reads-to-genome-index-1" id="toc-map-reads-to-genome-index-1" class="nav-link" data-scroll-target="#map-reads-to-genome-index-1">Map reads to genome index</a></li>
   </ul></li>
   </ul></li>
   </ul>
@@ -257,12 +258,18 @@ alpha stage warning
 
     reads[(Reads)]
     mappings[(Mappings)]
+    mapping_log[(Mapping\nlog)]
     map_reads{STAR}
 
     ref_index --- map_reads
     reads --- map_reads
     map_reads --&gt; mappings
+    map_reads --&gt; mapping_log
 
+    multiqc{MultiQC}
+    mapping_qc_report((("Mapping\nQC\nreport")))
+
+    mapping_log --- multiqc --&gt; mapping_qc_report
 </pre>
 </div>
 <p></p></figure><p></p>
@@ -510,6 +517,51 @@ alpha stage warning
 <span id="cb6-89"><a href="#cb6-89" aria-hidden="true" tabindex="-1"></a>    <span class="at">--outFileNamePrefix</span> <span class="st">"</span><span class="va">${map_dir}</span><span class="st">/</span><span class="va">${sample_prefix}</span><span class="st">"</span> <span class="dt">\</span></span>
 <span id="cb6-90"><a href="#cb6-90" aria-hidden="true" tabindex="-1"></a>    <span class="at">--outSAMtype</span> BAM Unsorted</span>
 <span id="cb6-91"><a href="#cb6-91" aria-hidden="true" tabindex="-1"></a><span class="ex">errcho</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+</div>
+</section>
+<section id="map-reads-to-genome-index-1" class="level3">
+<h3 class="anchored" data-anchor-id="map-reads-to-genome-index-1">Map reads to genome index</h3>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>star_qc.sh</strong></pre>
+</div>
+<div class="sourceCode" id="cb7" data-filename="star_qc.sh"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --job-name=star_qc</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --cpus-per-task=1</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mem=10GB</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --time=00-00:15:00</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="co">#&lt;... Remaining constant SBATCH flags ...&gt;</span></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="co">#######################################</span></span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="co"># Constants</span></span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a><span class="co">#######################################</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a><span class="bu">readonly</span> <span class="va">star_logs_dir</span><span class="op">=</span><span class="st">"data/mappings"</span></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="bu">readonly</span> <span class="va">reports_dir</span><span class="op">=</span><span class="st">"reports/star"</span></span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a><span class="co">#######################################</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Load software</span></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="co">#######################################</span></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span><span class="fu"> multiqc</span> <span class="kw">{</span></span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    <span class="bu">local</span> <span class="va">image_uri</span><span class="op">=</span>https://depot.galaxyproject.org/singularity/multiqc:1.21--pyhdfd78af_0</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>    <span class="ex">apptainer</span> exec <span class="st">"</span><span class="va">${image_uri}</span><span class="st">"</span> multiqc <span class="st">"</span><span class="va">${@}</span><span class="st">"</span></span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a><span class="kw">}</span></span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a><span class="co">#######################################</span></span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a><span class="co"># Main program</span></span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a><span class="co">#######################################</span></span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a><span class="co"># create target directories</span></span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> <span class="st">"</span><span class="va">${reports_dir}</span><span class="st">"</span></span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a><span class="co"># Run MultiQC for STAR logs</span></span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a><span class="ex">multiqc</span> <span class="dt">\</span></span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>  <span class="at">--filename</span> _star_qc <span class="dt">\</span></span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>  <span class="at">--outdir</span> <span class="st">"</span><span class="va">${reports_dir}</span><span class="st">"</span> <span class="dt">\</span></span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>  <span class="at">--title</span> <span class="st">"STAR QC"</span> <span class="dt">\</span></span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>  <span class="st">"</span><span class="va">${star_logs_dir}</span><span class="st">"</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 
