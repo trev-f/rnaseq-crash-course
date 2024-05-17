@@ -15,12 +15,18 @@ flowchart LR
     ref_annotations[(Reference\nAnnotations)]
     mappings[(Mappings)]
     counts_table[(Counts\ntable)]
-    counts_summary[(Counts\nsummary)]
     count_reads{featureCounts}
 
     mappings --- count_reads
     ref_annotations --- count_reads
     count_reads --> counts_table
+
+    counts_summary[(Counts\nsummary)]
+    multiqc{MultiQC}
+    counts_qc_report((("Counts\nQC\nreport")))
+
+    count_reads --> counts_summary
+    counts_summary --- multiqc --> counts_qc_report
 ```
 
 ## Scripts
@@ -56,8 +62,8 @@ ln -rs ../03_map_reads/data/references/GCF_002263795.3_ARS-UCD2.0_genomic.gtf.gz
 
 #SBATCH --job-name=generate_genome_index
 #SBATCH --cpus-per-task=8
-#SBATCH --mem=48GB
-#SBATCH --time=00-04:00:00
+#SBATCH --mem=16GB
+#SBATCH --time=00-01:00:00
 <... Remaining constant SBATCH flags ...>
 
 
@@ -70,6 +76,8 @@ readonly mappings=(data/mappings/*.bam)
 readonly annotations="data/references/GCF_002263795.3_ARS-UCD2.0_genomic.gtf.gz"
 # Path to directory where counts table should be stored
 readonly counts_dir="data/counts"
+# Path to directory where report should be stored
+readonly reports_dir="reports/counts"
 
 
 #######################################
@@ -102,4 +110,11 @@ featureCounts \
     -F GTF \
     -o "${counts_dir}/counts_table.txt" \
     "${mappings[@]}"
+
+# run QC for counts
+multiqc \
+    --filename _counts_qc \
+    --outdir "${reports_dir}" \
+    --title "Counts QC" \
+    "${counts_dir}"
 ```
