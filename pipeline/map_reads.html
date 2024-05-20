@@ -443,84 +443,86 @@ alpha stage warning
 <span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a><span class="co">#######################################</span></span>
 <span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Constants</span></span>
 <span id="cb6-13"><a href="#cb6-13" aria-hidden="true" tabindex="-1"></a><span class="co">#######################################</span></span>
-<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Array of fastq files</span></span>
-<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="bu">readonly</span> <span class="va">fastqs</span><span class="op">=</span><span class="va">(</span>data/reads/trim/<span class="pp">*</span>.fastq.gz<span class="va">)</span></span>
-<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Path to directory where STAR genome index is stored</span></span>
-<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="bu">readonly</span> <span class="va">star_genome_dir</span><span class="op">=</span><span class="st">"data/references/STAR"</span></span>
-<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Path to directory where output map (BAM) files from STAR should be stored</span></span>
-<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="bu">readonly</span> <span class="va">map_dir</span><span class="op">=</span><span class="st">"data/mappings"</span></span>
-<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a><span class="co">#######################################</span></span>
-<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a><span class="co"># Load software</span></span>
+<span id="cb6-14"><a href="#cb6-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Index associated with the Slurm array task ID</span></span>
+<span id="cb6-15"><a href="#cb6-15" aria-hidden="true" tabindex="-1"></a><span class="bu">readonly</span> <span class="va">i</span><span class="op">=</span><span class="st">"</span><span class="va">${SLURM_ARRAY_TASK_ID}</span><span class="st">"</span></span>
+<span id="cb6-16"><a href="#cb6-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Array of fastq files</span></span>
+<span id="cb6-17"><a href="#cb6-17" aria-hidden="true" tabindex="-1"></a><span class="bu">readonly</span> <span class="va">fastqs</span><span class="op">=</span><span class="va">(</span>data/reads/trim/<span class="pp">*</span>.fastq.gz<span class="va">)</span></span>
+<span id="cb6-18"><a href="#cb6-18" aria-hidden="true" tabindex="-1"></a><span class="co"># Path to directory where STAR genome index is stored</span></span>
+<span id="cb6-19"><a href="#cb6-19" aria-hidden="true" tabindex="-1"></a><span class="bu">readonly</span> <span class="va">star_genome_dir</span><span class="op">=</span><span class="st">"data/references/STAR"</span></span>
+<span id="cb6-20"><a href="#cb6-20" aria-hidden="true" tabindex="-1"></a><span class="co"># Path to directory where output map (BAM) files from STAR should be stored</span></span>
+<span id="cb6-21"><a href="#cb6-21" aria-hidden="true" tabindex="-1"></a><span class="bu">readonly</span> <span class="va">map_dir</span><span class="op">=</span><span class="st">"data/mappings"</span></span>
+<span id="cb6-22"><a href="#cb6-22" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-23"><a href="#cb6-23" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-24"><a href="#cb6-24" aria-hidden="true" tabindex="-1"></a><span class="co">#######################################</span></span>
-<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a><span class="co"># echo to stderr</span></span>
-<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span><span class="fu"> errcho</span> <span class="kw">{</span></span>
-<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a>  <span class="op">&gt;&amp;</span><span class="dv">2</span> <span class="bu">echo</span> <span class="st">"</span><span class="va">${@}</span><span class="st">"</span></span>
-<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a><span class="kw">}</span></span>
-<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span><span class="fu"> STAR</span> <span class="kw">{</span></span>
-<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a>  <span class="bu">local</span> <span class="va">image_uri</span><span class="op">=</span><span class="st">"https://depot.galaxyproject.org/singularity/star%3A2.7.11b--h43eeafb_1"</span></span>
-<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>  <span class="ex">apptainer</span> exec <span class="st">"</span><span class="va">${image_uri}</span><span class="st">"</span> STAR <span class="st">"</span><span class="va">${@}</span><span class="st">"</span></span>
-<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a><span class="kw">}</span></span>
-<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a><span class="co">#######################################</span></span>
-<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a><span class="co"># Main program</span></span>
+<span id="cb6-25"><a href="#cb6-25" aria-hidden="true" tabindex="-1"></a><span class="co"># Load software</span></span>
+<span id="cb6-26"><a href="#cb6-26" aria-hidden="true" tabindex="-1"></a><span class="co">#######################################</span></span>
+<span id="cb6-27"><a href="#cb6-27" aria-hidden="true" tabindex="-1"></a><span class="co"># echo to stderr</span></span>
+<span id="cb6-28"><a href="#cb6-28" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span><span class="fu"> errcho</span> <span class="kw">{</span></span>
+<span id="cb6-29"><a href="#cb6-29" aria-hidden="true" tabindex="-1"></a>  <span class="op">&gt;&amp;</span><span class="dv">2</span> <span class="bu">echo</span> <span class="st">"</span><span class="va">${@}</span><span class="st">"</span></span>
+<span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a><span class="kw">}</span></span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span><span class="fu"> STAR</span> <span class="kw">{</span></span>
+<span id="cb6-32"><a href="#cb6-32" aria-hidden="true" tabindex="-1"></a>  <span class="bu">local</span> <span class="va">image_uri</span><span class="op">=</span><span class="st">"https://depot.galaxyproject.org/singularity/star%3A2.7.11b--h43eeafb_1"</span></span>
+<span id="cb6-33"><a href="#cb6-33" aria-hidden="true" tabindex="-1"></a>  <span class="ex">apptainer</span> exec <span class="st">"</span><span class="va">${image_uri}</span><span class="st">"</span> STAR <span class="st">"</span><span class="va">${@}</span><span class="st">"</span></span>
+<span id="cb6-34"><a href="#cb6-34" aria-hidden="true" tabindex="-1"></a><span class="kw">}</span></span>
+<span id="cb6-35"><a href="#cb6-35" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-36"><a href="#cb6-36" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb6-37"><a href="#cb6-37" aria-hidden="true" tabindex="-1"></a><span class="co">#######################################</span></span>
-<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a><span class="co"># create target directories</span></span>
-<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> <span class="st">"</span><span class="va">${map_dir}</span><span class="st">"</span></span>
-<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a><span class="co"># create array of fastq prefixes</span></span>
+<span id="cb6-38"><a href="#cb6-38" aria-hidden="true" tabindex="-1"></a><span class="co"># Main program</span></span>
+<span id="cb6-39"><a href="#cb6-39" aria-hidden="true" tabindex="-1"></a><span class="co">#######################################</span></span>
+<span id="cb6-40"><a href="#cb6-40" aria-hidden="true" tabindex="-1"></a><span class="co"># create target directories</span></span>
+<span id="cb6-41"><a href="#cb6-41" aria-hidden="true" tabindex="-1"></a><span class="fu">mkdir</span> <span class="at">-p</span> <span class="st">"</span><span class="va">${map_dir}</span><span class="st">"</span></span>
 <span id="cb6-42"><a href="#cb6-42" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a><span class="co">## use associative array to store unique fastq path prefixes</span></span>
-<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a><span class="bu">declare</span> <span class="at">-A</span> <span class="va">unsorted_unique_fastq_path_prefixes</span></span>
-<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a><span class="co">## iterate over fastqs and store path prefixes in the associative array</span></span>
-<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> fastq <span class="kw">in</span> <span class="st">"</span><span class="va">${fastqs</span><span class="op">[@]</span><span class="va">}</span><span class="st">"</span></span>
-<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a><span class="cf">do</span></span>
-<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a>    <span class="co"># extract the path prefix from the full fastq file path and add it to the associative array</span></span>
-<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a>    <span class="va">fastq_path_prefix</span><span class="op">=</span><span class="va">$(</span><span class="bu">echo</span> <span class="st">"</span><span class="va">${fastq}</span><span class="st">"</span> <span class="kw">|</span> <span class="fu">sed</span> <span class="at">-E</span> <span class="st">'s/_S[0-9]+_L[0-9]{3}.*//g'</span><span class="va">)</span></span>
-<span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a>    <span class="va">unsorted_unique_fastq_path_prefixes</span><span class="op">[</span><span class="st">"</span><span class="va">${fastq_path_prefix}</span><span class="st">"</span><span class="op">]=</span>1</span>
-<span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span>
-<span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-53"><a href="#cb6-53" aria-hidden="true" tabindex="-1"></a><span class="co">## the associative array is useful for getting unique elements</span></span>
-<span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a><span class="co">## however, it is not determinitive and is not easily indexed by number</span></span>
-<span id="cb6-55"><a href="#cb6-55" aria-hidden="true" tabindex="-1"></a><span class="co">## we need a constant ordering and easy indexing by number to run in parallel with Slurm arrays</span></span>
-<span id="cb6-56"><a href="#cb6-56" aria-hidden="true" tabindex="-1"></a><span class="co">## sort the fastq path prefixes to get a determinitive order</span></span>
-<span id="cb6-57"><a href="#cb6-57" aria-hidden="true" tabindex="-1"></a><span class="co">## store the output as a regular array which we can access by numerical index</span></span>
-<span id="cb6-58"><a href="#cb6-58" aria-hidden="true" tabindex="-1"></a><span class="va">unique_fastq_path_prefixes</span><span class="op">=</span><span class="va">($(</span><span class="bu">printf</span> <span class="st">'%s\n'</span> <span class="st">"</span><span class="va">${</span><span class="op">!</span><span class="va">unsorted_unique_fastq_path_prefixes</span><span class="op">[@]</span><span class="va">}</span><span class="st">"</span> <span class="kw">|</span> <span class="fu">sort</span><span class="va">))</span></span>
-<span id="cb6-59"><a href="#cb6-59" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-60"><a href="#cb6-60" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate the total number of mapping jobs to run</span></span>
-<span id="cb6-61"><a href="#cb6-61" aria-hidden="true" tabindex="-1"></a><span class="co"># this is the number of unique samples which is size (length) of the fastq path prefixes array</span></span>
-<span id="cb6-62"><a href="#cb6-62" aria-hidden="true" tabindex="-1"></a><span class="co"># note that this is not the number of fastq files</span></span>
-<span id="cb6-63"><a href="#cb6-63" aria-hidden="true" tabindex="-1"></a><span class="ex">errcho</span> <span class="st">"Total number of mapping jobs to run: </span><span class="va">${</span><span class="op">#</span><span class="va">unique_fastq_path_prefixes</span><span class="op">[@]</span><span class="va">}</span><span class="st">"</span></span>
-<span id="cb6-64"><a href="#cb6-64" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-65"><a href="#cb6-65" aria-hidden="true" tabindex="-1"></a><span class="co"># get the fastq path prefix for the current array index</span></span>
-<span id="cb6-66"><a href="#cb6-66" aria-hidden="true" tabindex="-1"></a><span class="ex">errcho</span> <span class="st">"Array job index: </span><span class="va">${i}</span><span class="st">"</span></span>
-<span id="cb6-67"><a href="#cb6-67" aria-hidden="true" tabindex="-1"></a><span class="va">fastq_path_prefix</span><span class="op">=</span><span class="st">"</span><span class="va">${unique_fastq_path_prefixes</span><span class="op">[</span><span class="va">$i</span><span class="op">]</span><span class="va">}</span><span class="st">"</span></span>
-<span id="cb6-68"><a href="#cb6-68" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-69"><a href="#cb6-69" aria-hidden="true" tabindex="-1"></a><span class="ex">errcho</span> <span class="st">"Fastq path prefix: </span><span class="va">${fastq_path_prefix}</span><span class="st">"</span></span>
-<span id="cb6-70"><a href="#cb6-70" aria-hidden="true" tabindex="-1"></a><span class="co"># get prefix for sample name</span></span>
-<span id="cb6-71"><a href="#cb6-71" aria-hidden="true" tabindex="-1"></a><span class="va">sample_prefix</span><span class="op">=</span><span class="va">$(</span><span class="fu">basename</span> <span class="st">"</span><span class="va">${fastq_path_prefix}</span><span class="st">"</span><span class="va">)</span></span>
-<span id="cb6-72"><a href="#cb6-72" aria-hidden="true" tabindex="-1"></a><span class="ex">errcho</span> <span class="st">"Sample prefix: </span><span class="va">${sample_prefix}</span><span class="st">"</span></span>
-<span id="cb6-73"><a href="#cb6-73" aria-hidden="true" tabindex="-1"></a><span class="co"># get paths to fastq files as an array</span></span>
-<span id="cb6-74"><a href="#cb6-74" aria-hidden="true" tabindex="-1"></a><span class="va">fastq_paths</span><span class="op">=</span><span class="va">(</span><span class="st">"</span><span class="va">${fastq_path_prefix}</span><span class="st">"</span><span class="pp">*</span>.fastq.gz<span class="va">)</span></span>
-<span id="cb6-75"><a href="#cb6-75" aria-hidden="true" tabindex="-1"></a><span class="ex">errcho</span> <span class="st">"Fastq files for this sample: </span><span class="va">${fastq_paths</span><span class="op">[@]</span><span class="va">}</span><span class="st">"</span></span>
-<span id="cb6-76"><a href="#cb6-76" aria-hidden="true" tabindex="-1"></a><span class="co"># convert the array of fastq file paths into a string of fastq file paths separated by commas</span></span>
-<span id="cb6-77"><a href="#cb6-77" aria-hidden="true" tabindex="-1"></a><span class="va">oldifs</span><span class="op">=</span><span class="st">"</span><span class="va">${IFS}</span><span class="st">"</span></span>
-<span id="cb6-78"><a href="#cb6-78" aria-hidden="true" tabindex="-1"></a><span class="va">IFS</span><span class="op">=</span><span class="st">','</span></span>
-<span id="cb6-79"><a href="#cb6-79" aria-hidden="true" tabindex="-1"></a><span class="va">read_files_in</span><span class="op">=</span><span class="st">"</span><span class="va">${fastq_paths</span><span class="op">[*]</span><span class="va">}</span><span class="st">"</span></span>
-<span id="cb6-80"><a href="#cb6-80" aria-hidden="true" tabindex="-1"></a><span class="va">IFS</span><span class="op">=</span><span class="st">"</span><span class="va">${oldifs}</span><span class="st">"</span></span>
-<span id="cb6-81"><a href="#cb6-81" aria-hidden="true" tabindex="-1"></a><span class="ex">errcho</span> <span class="st">"Reads files input: </span><span class="va">${read_files_in}</span><span class="st">"</span></span>
-<span id="cb6-82"><a href="#cb6-82" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-83"><a href="#cb6-83" aria-hidden="true" tabindex="-1"></a><span class="co"># map reads with STAR</span></span>
-<span id="cb6-84"><a href="#cb6-84" aria-hidden="true" tabindex="-1"></a><span class="ex">STAR</span> <span class="dt">\</span></span>
-<span id="cb6-85"><a href="#cb6-85" aria-hidden="true" tabindex="-1"></a>    <span class="at">--runThreadN</span> <span class="st">"</span><span class="va">${SLURM_CPUS_PER_TASK</span><span class="op">:-</span>1<span class="va">}</span><span class="st">"</span> <span class="dt">\</span></span>
-<span id="cb6-86"><a href="#cb6-86" aria-hidden="true" tabindex="-1"></a>    <span class="at">--genomeDir</span> <span class="st">"</span><span class="va">${star_genome_dir}</span><span class="st">"</span> <span class="dt">\</span></span>
-<span id="cb6-87"><a href="#cb6-87" aria-hidden="true" tabindex="-1"></a>    <span class="at">--readFilesIn</span> <span class="st">"</span><span class="va">${read_files_in}</span><span class="st">"</span> <span class="dt">\</span></span>
-<span id="cb6-88"><a href="#cb6-88" aria-hidden="true" tabindex="-1"></a>    <span class="at">--readFilesCommand</span> gunzip <span class="at">-c</span> <span class="dt">\</span></span>
-<span id="cb6-89"><a href="#cb6-89" aria-hidden="true" tabindex="-1"></a>    <span class="at">--outFileNamePrefix</span> <span class="st">"</span><span class="va">${map_dir}</span><span class="st">/</span><span class="va">${sample_prefix}</span><span class="st">"</span> <span class="dt">\</span></span>
-<span id="cb6-90"><a href="#cb6-90" aria-hidden="true" tabindex="-1"></a>    <span class="at">--outSAMtype</span> BAM Unsorted</span>
-<span id="cb6-91"><a href="#cb6-91" aria-hidden="true" tabindex="-1"></a><span class="ex">errcho</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<span id="cb6-43"><a href="#cb6-43" aria-hidden="true" tabindex="-1"></a><span class="co"># create array of fastq prefixes</span></span>
+<span id="cb6-44"><a href="#cb6-44" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-45"><a href="#cb6-45" aria-hidden="true" tabindex="-1"></a><span class="co">## use associative array to store unique fastq path prefixes</span></span>
+<span id="cb6-46"><a href="#cb6-46" aria-hidden="true" tabindex="-1"></a><span class="bu">declare</span> <span class="at">-A</span> <span class="va">unsorted_unique_fastq_path_prefixes</span></span>
+<span id="cb6-47"><a href="#cb6-47" aria-hidden="true" tabindex="-1"></a><span class="co">## iterate over fastqs and store path prefixes in the associative array</span></span>
+<span id="cb6-48"><a href="#cb6-48" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> fastq <span class="kw">in</span> <span class="st">"</span><span class="va">${fastqs</span><span class="op">[@]</span><span class="va">}</span><span class="st">"</span></span>
+<span id="cb6-49"><a href="#cb6-49" aria-hidden="true" tabindex="-1"></a><span class="cf">do</span></span>
+<span id="cb6-50"><a href="#cb6-50" aria-hidden="true" tabindex="-1"></a>    <span class="co"># extract the path prefix from the full fastq file path and add it to the associative array</span></span>
+<span id="cb6-51"><a href="#cb6-51" aria-hidden="true" tabindex="-1"></a>    <span class="va">fastq_path_prefix</span><span class="op">=</span><span class="va">$(</span><span class="bu">echo</span> <span class="st">"</span><span class="va">${fastq}</span><span class="st">"</span> <span class="kw">|</span> <span class="fu">sed</span> <span class="at">-E</span> <span class="st">'s/_S[0-9]+_L[0-9]{3}.*//g'</span><span class="va">)</span></span>
+<span id="cb6-52"><a href="#cb6-52" aria-hidden="true" tabindex="-1"></a>    <span class="va">unsorted_unique_fastq_path_prefixes</span><span class="op">[</span><span class="st">"</span><span class="va">${fastq_path_prefix}</span><span class="st">"</span><span class="op">]=</span>1</span>
+<span id="cb6-53"><a href="#cb6-53" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span>
+<span id="cb6-54"><a href="#cb6-54" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-55"><a href="#cb6-55" aria-hidden="true" tabindex="-1"></a><span class="co">## the associative array is useful for getting unique elements</span></span>
+<span id="cb6-56"><a href="#cb6-56" aria-hidden="true" tabindex="-1"></a><span class="co">## however, it is not determinitive and is not easily indexed by number</span></span>
+<span id="cb6-57"><a href="#cb6-57" aria-hidden="true" tabindex="-1"></a><span class="co">## we need a constant ordering and easy indexing by number to run in parallel with Slurm arrays</span></span>
+<span id="cb6-58"><a href="#cb6-58" aria-hidden="true" tabindex="-1"></a><span class="co">## sort the fastq path prefixes to get a determinitive order</span></span>
+<span id="cb6-59"><a href="#cb6-59" aria-hidden="true" tabindex="-1"></a><span class="co">## store the output as a regular array which we can access by numerical index</span></span>
+<span id="cb6-60"><a href="#cb6-60" aria-hidden="true" tabindex="-1"></a><span class="va">unique_fastq_path_prefixes</span><span class="op">=</span><span class="va">($(</span><span class="bu">printf</span> <span class="st">'%s\n'</span> <span class="st">"</span><span class="va">${</span><span class="op">!</span><span class="va">unsorted_unique_fastq_path_prefixes</span><span class="op">[@]</span><span class="va">}</span><span class="st">"</span> <span class="kw">|</span> <span class="fu">sort</span><span class="va">))</span></span>
+<span id="cb6-61"><a href="#cb6-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-62"><a href="#cb6-62" aria-hidden="true" tabindex="-1"></a><span class="co"># calculate the total number of mapping jobs to run</span></span>
+<span id="cb6-63"><a href="#cb6-63" aria-hidden="true" tabindex="-1"></a><span class="co"># this is the number of unique samples which is size (length) of the fastq path prefixes array</span></span>
+<span id="cb6-64"><a href="#cb6-64" aria-hidden="true" tabindex="-1"></a><span class="co"># note that this is not the number of fastq files</span></span>
+<span id="cb6-65"><a href="#cb6-65" aria-hidden="true" tabindex="-1"></a><span class="ex">errcho</span> <span class="st">"Total number of mapping jobs to run: </span><span class="va">${</span><span class="op">#</span><span class="va">unique_fastq_path_prefixes</span><span class="op">[@]</span><span class="va">}</span><span class="st">"</span></span>
+<span id="cb6-66"><a href="#cb6-66" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-67"><a href="#cb6-67" aria-hidden="true" tabindex="-1"></a><span class="co"># get the fastq path prefix for the current array index</span></span>
+<span id="cb6-68"><a href="#cb6-68" aria-hidden="true" tabindex="-1"></a><span class="ex">errcho</span> <span class="st">"Array job index: </span><span class="va">${i}</span><span class="st">"</span></span>
+<span id="cb6-69"><a href="#cb6-69" aria-hidden="true" tabindex="-1"></a><span class="va">fastq_path_prefix</span><span class="op">=</span><span class="st">"</span><span class="va">${unique_fastq_path_prefixes</span><span class="op">[</span><span class="va">$i</span><span class="op">]</span><span class="va">}</span><span class="st">"</span></span>
+<span id="cb6-70"><a href="#cb6-70" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-71"><a href="#cb6-71" aria-hidden="true" tabindex="-1"></a><span class="ex">errcho</span> <span class="st">"Fastq path prefix: </span><span class="va">${fastq_path_prefix}</span><span class="st">"</span></span>
+<span id="cb6-72"><a href="#cb6-72" aria-hidden="true" tabindex="-1"></a><span class="co"># get prefix for sample name</span></span>
+<span id="cb6-73"><a href="#cb6-73" aria-hidden="true" tabindex="-1"></a><span class="va">sample_prefix</span><span class="op">=</span><span class="va">$(</span><span class="fu">basename</span> <span class="st">"</span><span class="va">${fastq_path_prefix}</span><span class="st">"</span><span class="va">)</span></span>
+<span id="cb6-74"><a href="#cb6-74" aria-hidden="true" tabindex="-1"></a><span class="ex">errcho</span> <span class="st">"Sample prefix: </span><span class="va">${sample_prefix}</span><span class="st">"</span></span>
+<span id="cb6-75"><a href="#cb6-75" aria-hidden="true" tabindex="-1"></a><span class="co"># get paths to fastq files as an array</span></span>
+<span id="cb6-76"><a href="#cb6-76" aria-hidden="true" tabindex="-1"></a><span class="va">fastq_paths</span><span class="op">=</span><span class="va">(</span><span class="st">"</span><span class="va">${fastq_path_prefix}</span><span class="st">"</span><span class="pp">*</span>.fastq.gz<span class="va">)</span></span>
+<span id="cb6-77"><a href="#cb6-77" aria-hidden="true" tabindex="-1"></a><span class="ex">errcho</span> <span class="st">"Fastq files for this sample: </span><span class="va">${fastq_paths</span><span class="op">[@]</span><span class="va">}</span><span class="st">"</span></span>
+<span id="cb6-78"><a href="#cb6-78" aria-hidden="true" tabindex="-1"></a><span class="co"># convert the array of fastq file paths into a string of fastq file paths separated by commas</span></span>
+<span id="cb6-79"><a href="#cb6-79" aria-hidden="true" tabindex="-1"></a><span class="va">oldifs</span><span class="op">=</span><span class="st">"</span><span class="va">${IFS}</span><span class="st">"</span></span>
+<span id="cb6-80"><a href="#cb6-80" aria-hidden="true" tabindex="-1"></a><span class="va">IFS</span><span class="op">=</span><span class="st">','</span></span>
+<span id="cb6-81"><a href="#cb6-81" aria-hidden="true" tabindex="-1"></a><span class="va">read_files_in</span><span class="op">=</span><span class="st">"</span><span class="va">${fastq_paths</span><span class="op">[*]</span><span class="va">}</span><span class="st">"</span></span>
+<span id="cb6-82"><a href="#cb6-82" aria-hidden="true" tabindex="-1"></a><span class="va">IFS</span><span class="op">=</span><span class="st">"</span><span class="va">${oldifs}</span><span class="st">"</span></span>
+<span id="cb6-83"><a href="#cb6-83" aria-hidden="true" tabindex="-1"></a><span class="ex">errcho</span> <span class="st">"Reads files input: </span><span class="va">${read_files_in}</span><span class="st">"</span></span>
+<span id="cb6-84"><a href="#cb6-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-85"><a href="#cb6-85" aria-hidden="true" tabindex="-1"></a><span class="co"># map reads with STAR</span></span>
+<span id="cb6-86"><a href="#cb6-86" aria-hidden="true" tabindex="-1"></a><span class="ex">STAR</span> <span class="dt">\</span></span>
+<span id="cb6-87"><a href="#cb6-87" aria-hidden="true" tabindex="-1"></a>    <span class="at">--runThreadN</span> <span class="st">"</span><span class="va">${SLURM_CPUS_PER_TASK</span><span class="op">:-</span>1<span class="va">}</span><span class="st">"</span> <span class="dt">\</span></span>
+<span id="cb6-88"><a href="#cb6-88" aria-hidden="true" tabindex="-1"></a>    <span class="at">--genomeDir</span> <span class="st">"</span><span class="va">${star_genome_dir}</span><span class="st">"</span> <span class="dt">\</span></span>
+<span id="cb6-89"><a href="#cb6-89" aria-hidden="true" tabindex="-1"></a>    <span class="at">--readFilesIn</span> <span class="st">"</span><span class="va">${read_files_in}</span><span class="st">"</span> <span class="dt">\</span></span>
+<span id="cb6-90"><a href="#cb6-90" aria-hidden="true" tabindex="-1"></a>    <span class="at">--readFilesCommand</span> gunzip <span class="at">-c</span> <span class="dt">\</span></span>
+<span id="cb6-91"><a href="#cb6-91" aria-hidden="true" tabindex="-1"></a>    <span class="at">--outFileNamePrefix</span> <span class="st">"</span><span class="va">${map_dir}</span><span class="st">/</span><span class="va">${sample_prefix}</span><span class="st">"</span> <span class="dt">\</span></span>
+<span id="cb6-92"><a href="#cb6-92" aria-hidden="true" tabindex="-1"></a>    <span class="at">--outSAMtype</span> BAM Unsorted</span>
+<span id="cb6-93"><a href="#cb6-93" aria-hidden="true" tabindex="-1"></a><span class="ex">errcho</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="qc-mappings" class="level3">
