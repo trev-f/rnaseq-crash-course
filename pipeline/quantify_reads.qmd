@@ -101,7 +101,7 @@ function multiqc {
 # Main program
 #######################################
 # create target directories
-mkdir -p "${counts_dir}"
+mkdir -p "${counts_dir}" "${reports_dir}"
 
 # count reads within genes
 featureCounts \
