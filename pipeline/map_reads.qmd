@@ -202,6 +202,8 @@ ln -rs ../02_trim_reads/data/reads/trim/*R1_001_trimmed.fastq.gz "${trim_reads_d
 #######################################
 # Constants
 #######################################
+# Index associated with the Slurm array task ID
+readonly i="${SLURM_ARRAY_TASK_ID}"
 # Array of fastq files
 readonly fastqs=(data/reads/trim/*.fastq.gz)
 # Path to directory where STAR genome index is stored
