@@ -1,8 +1,8 @@
 site_source := $(wildcard \
-	*.qmd \
-	_quarto*.yml \
-	computing/*.qmd \
-	pipeline/*.qmd \
+	src/quarto/*.qmd \
+	src/quarto/_quarto*.yml \
+	src/quarto/computing/*.qmd \
+	src/quarto/pipeline/*.qmd \
 )
 site_sentinel := .cache/sentinels/.render-site
 publish_sentinel := .cache/sentinels/.publish-site

@@ -1,3 +1,0 @@
-# RNA-seq Crash Course
-
-This is the website for the RNA-seq Crash Course by the University of Tennessee Institute of Agriculture Genomics Center.

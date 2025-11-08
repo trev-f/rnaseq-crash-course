@@ -16,5 +16,5 @@ apptainer exec --cleanenv "${quarto_image}" quarto publish gh-pages \
     --no-browser \
     --no-prompt \
     --no-render \
-    .
+    src/quarto
 

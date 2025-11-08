@@ -1,0 +1,8 @@
+project:
+  type: website
+  output-dir: "../../exploratory/rnaseq-crash-course"
+
+format:
+  html:
+    embed-resources: true
+
