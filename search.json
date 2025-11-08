@@ -4,14 +4,14 @@
     "href": "index.html",
     "title": "RNA-seq Crash Course",
     "section": "",
-    "text": "alpha stage warning\n\n\n\nThis website is in its alpha stage. All pages are under active development and are subject to change at any time without warning.\n\n\n\nRNA-seq Crash Course\nThis is the website for the RNA-seq Crash Course by the University of Tennessee Institute of Agriculture Genomics Center."
+    "text": "Warningalpha stage warning\n\n\n\nThis website is in its alpha stage. All pages are under active development and are subject to change at any time without warning.\n\n\n\nRNA-seq Crash Course\nThis is the website for the RNA-seq Crash Course by the University of Tennessee Institute of Agriculture Genomics Center."
   },
   {
     "objectID": "computing/isaac-ng.html",
     "href": "computing/isaac-ng.html",
     "title": "ISAAC-NG",
     "section": "",
-    "text": "alpha stage warning\n\n\n\nThis website is in its alpha stage. All pages are under active development and are subject to change at any time without warning.",
+    "text": "Warningalpha stage warning\n\n\n\nThis website is in its alpha stage. All pages are under active development and are subject to change at any time without warning.",
     "crumbs": [
       "ISAAC-NG"
     ]
@@ -51,7 +51,7 @@
     "href": "pipeline/trim_reads.html",
     "title": "Trim Reads",
     "section": "",
-    "text": "alpha stage warning\n\n\n\nThis website is in its alpha stage. All pages are under active development and are subject to change at any time without warning.",
+    "text": "Warningalpha stage warning\n\n\n\nThis website is in its alpha stage. All pages are under active development and are subject to change at any time without warning.",
     "crumbs": [
       "Trim Reads"
     ]
@@ -101,7 +101,7 @@
     "href": "pipeline/raw_fastqc.html",
     "title": "Raw Reads FastQC",
     "section": "",
-    "text": "alpha stage warning\n\n\n\nThis website is in its alpha stage. All pages are under active development and are subject to change at any time without warning.",
+    "text": "Warningalpha stage warning\n\n\n\nThis website is in its alpha stage. All pages are under active development and are subject to change at any time without warning.",
     "crumbs": [
       "Raw Reads FastQC"
     ]
@@ -141,7 +141,7 @@
     "href": "pipeline/raw_fastqc.html#multiqc-usage",
     "title": "Raw Reads FastQC",
     "section": "MultiQC usage",
-    "text": "MultiQC usage\n\nSoftware availability\n\n\n\n\n\n\nMultiQC version\n\n\n\nMultiQC had a significant update around v1.19 that made its reports significantly better from a user standpoint, especially when working with a large number of samples. I strongly recommend using the most recent MultiQC version (v1.21 at the time of writing this).\n\n\nMultiQC is available as Apptainer containers through BioContainers:\n\n\nTerminal\n\nfunction multiqc {\n  local image_uri=https://depot.galaxyproject.org/singularity/multiqc:1.21--pyhdfd78af_0\n  apptainer exec \"${image_uri}\" multiqc \"${@}\"\n}\n\n\n\nCommand usage\nThe method above makes MultiQC available through the multiqc command.\nBasic usage:\n\n\nTerminal\n\n1multiqc .\n\n\n1\n\nThis will traverse through all files and directories in the current working directory (.) and add any files that MultiQC recognizes to the report that it generates.\n\n\nUseful options:\n\n\nTerminal\n\nmultiqc \\\n1  --filename raw_reads_qc \\\n2  --outdir reports \\\n3  --title \"Raw reads QC\" \\\n  .\n\n\n1\n\nFilename to use for the MultiQC report and data files.\n\n2\n\nThe directory to write output files into.\n\n3\n\nA title for the report.",
+    "text": "MultiQC usage\n\nSoftware availability\n\n\n\n\n\n\nNoteMultiQC version\n\n\n\nMultiQC had a significant update around v1.19 that made its reports significantly better from a user standpoint, especially when working with a large number of samples. I strongly recommend using the most recent MultiQC version (v1.21 at the time of writing this).\n\n\nMultiQC is available as Apptainer containers through BioContainers:\n\n\nTerminal\n\nfunction multiqc {\n  local image_uri=https://depot.galaxyproject.org/singularity/multiqc:1.21--pyhdfd78af_0\n  apptainer exec \"${image_uri}\" multiqc \"${@}\"\n}\n\n\n\nCommand usage\nThe method above makes MultiQC available through the multiqc command.\nBasic usage:\n\n\nTerminal\n\n1multiqc .\n\n\n1\n\nThis will traverse through all files and directories in the current working directory (.) and add any files that MultiQC recognizes to the report that it generates.\n\n\nUseful options:\n\n\nTerminal\n\nmultiqc \\\n1  --filename raw_reads_qc \\\n2  --outdir reports \\\n3  --title \"Raw reads QC\" \\\n  .\n\n\n1\n\nFilename to use for the MultiQC report and data files.\n\n2\n\nThe directory to write output files into.\n\n3\n\nA title for the report.",
     "crumbs": [
       "Raw Reads FastQC"
     ]
@@ -151,7 +151,7 @@
     "href": "pipeline/quantify_reads.html",
     "title": "Quantify reads within genes",
     "section": "",
-    "text": "alpha stage warning\n\n\n\nThis website is in its alpha stage. All pages are under active development and are subject to change at any time without warning.",
+    "text": "Warningalpha stage warning\n\n\n\nThis website is in its alpha stage. All pages are under active development and are subject to change at any time without warning.",
     "crumbs": [
       "Quantify reads within genes"
     ]
@@ -201,7 +201,7 @@
     "href": "pipeline/map_reads.html",
     "title": "Map Reads",
     "section": "",
-    "text": "alpha stage warning\n\n\n\nThis website is in its alpha stage. All pages are under active development and are subject to change at any time without warning.",
+    "text": "Warningalpha stage warning\n\n\n\nThis website is in its alpha stage. All pages are under active development and are subject to change at any time without warning.",
     "crumbs": [
       "Map Reads"
     ]
@@ -271,7 +271,7 @@
     "href": "computing/hpc.html",
     "title": "High Performance Computing",
     "section": "",
-    "text": "alpha stage warning\n\n\n\nThis website is in its alpha stage. All pages are under active development and are subject to change at any time without warning.",
+    "text": "Warningalpha stage warning\n\n\n\nThis website is in its alpha stage. All pages are under active development and are subject to change at any time without warning.",
     "crumbs": [
       "High Performance Computing"
     ]
@@ -321,6 +321,6 @@
     "href": "about.html",
     "title": "About",
     "section": "",
-    "text": "alpha stage warning\n\n\n\nThis website is in its alpha stage. All pages are under active development and are subject to change at any time without warning.\n\n\n\nAbout"
+    "text": "Warningalpha stage warning\n\n\n\nThis website is in its alpha stage. All pages are under active development and are subject to change at any time without warning.\n\n\n\nAbout"
   }
 ]
