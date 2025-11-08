@@ -1,1 +1,0 @@
-Sitemap: https://trev-f.github.io/rnaseq-crash-course/sitemap.xml
