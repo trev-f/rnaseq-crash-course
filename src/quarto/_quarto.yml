@@ -11,6 +11,7 @@ website:
       - about.qmd
       - sidebar:computing
       - sidebar:pipeline
+      - sidebar:slides
     tools:
       - icon: github
         menu:
@@ -35,6 +36,11 @@ website:
         - href: pipeline/trim_reads.qmd
         - href: pipeline/map_reads.qmd
         - href: pipeline/quantify_reads.qmd
+    - id: slides
+      title: "Slides"
+      style: "docked"
+      contents:
+        - href: slides/20251107-lab_meeting.qmd
 
 format:
   html:
