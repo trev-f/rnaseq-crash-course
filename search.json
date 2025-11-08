@@ -1,5 +1,12 @@
 [
   {
+    "objectID": "about.html",
+    "href": "about.html",
+    "title": "About",
+    "section": "",
+    "text": "Warningalpha stage warning\n\n\n\nThis website is in its alpha stage. All pages are under active development and are subject to change at any time without warning.\n\n\n\nAbout"
+  },
+  {
     "objectID": "computing/isaac-ng.html",
     "href": "computing/isaac-ng.html",
     "title": "ISAAC-NG",
@@ -307,6 +314,16 @@
     "text": "Other resources\nMuch of this was motivated by the HBC Training HPC intro. Check out their page especially for thoughts on multithreading and parallelization.",
     "crumbs": [
       "High Performance Computing"
+    ]
+  },
+  {
+    "objectID": "slides/20251107-lab_meeting.html#utk-bioinformatics-useful-links",
+    "href": "slides/20251107-lab_meeting.html#utk-bioinformatics-useful-links",
+    "title": "RNA-seq Crash Course",
+    "section": "UTK bioinformatics useful links",
+    "text": "UTK bioinformatics useful links\n\nUTK Bioinformatics Consulting Services – A collaborative group of genomics and bioinformatics analysts and scientific computing specialists aimed at providing a range of research support and training to faculty, staff, and students.\nUTK Bioinformatics Newsletter – A monthly newsletter about the latest bioinformatics and computational biology research at the University of Tennessee.\nBioinformatics office hours\nHigh Performance & Scientific Computing\nUT Genomics Core",
+    "crumbs": [
+      "RNA-seq Crash Course"
     ]
   }
 ]
