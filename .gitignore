@@ -8,3 +8,7 @@
 /.quarto/
 /exploratory/
 
+# build
+/.cache/
+
+**/*.quarto_ipynb
