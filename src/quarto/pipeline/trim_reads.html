@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>hpc – RNA-seq Crash Course</title>
+<title>trim_reads – RNA-seq Crash Course</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -20,27 +20,62 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
-<script src="../site_libs/quarto-nav/quarto-nav.js"></script>
-<script src="../site_libs/quarto-nav/headroom.min.js"></script>
-<script src="../site_libs/clipboard/clipboard.min.js"></script>
-<script src="../site_libs/quarto-search/autocomplete.umd.js"></script>
-<script src="../site_libs/quarto-search/fuse.min.js"></script>
-<script src="../site_libs/quarto-search/quarto-search.js"></script>
-<meta name="quarto:offset" content="../">
-<script src="../site_libs/quarto-html/quarto.js" type="module"></script>
-<script src="../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
-<script src="../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
-<script src="../site_libs/quarto-html/popper.min.js"></script>
-<script src="../site_libs/quarto-html/tippy.umd.min.js"></script>
-<script src="../site_libs/quarto-html/anchor.min.js"></script>
-<link href="../site_libs/quarto-html/tippy.css" rel="stylesheet">
-<link href="../site_libs/quarto-html/quarto-syntax-highlighting-dc55a5b9e770e841cd82e46aadbfb9b0.css" rel="stylesheet" id="quarto-text-highlighting-styles">
-<script src="../site_libs/bootstrap/bootstrap.min.js"></script>
-<link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-43081d808c96cc46af55a3a816ae9eed.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script src="../../../site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="../../../site_libs/quarto-nav/headroom.min.js"></script>
+<script src="../../../site_libs/clipboard/clipboard.min.js"></script>
+<script src="../../../site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="../../../site_libs/quarto-search/fuse.min.js"></script>
+<script src="../../../site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="../../../">
+<script src="../../../site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/axe/axe-check.js" type="module"></script>
+<script src="../../../site_libs/quarto-html/popper.min.js"></script>
+<script src="../../../site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="../../../site_libs/quarto-html/anchor.min.js"></script>
+<link href="../../../site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="../../../site_libs/quarto-html/quarto-syntax-highlighting-dc55a5b9e770e841cd82e46aadbfb9b0.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="../../../site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="../../../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="../../../site_libs/bootstrap/bootstrap-43081d808c96cc46af55a3a816ae9eed.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "navbar",
   "copy-button": false,
@@ -70,19 +105,19 @@ ul.task-list li input[type="checkbox"] {
 }</script>
 
 
-<link rel="stylesheet" href="../styles.css">
+<link rel="stylesheet" href="../../../styles.css">
 </head>
 
-<body class="nav-sidebar docked nav-fixed quarto-light">
+<body class="nav-fixed quarto-light">
 
 <div id="quarto-search-results"></div>
   <header id="quarto-header" class="headroom fixed-top">
     <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
       <div class="navbar-container container-fluid">
       <div class="navbar-brand-container mx-auto">
-    <a href="../index.html" class="navbar-brand navbar-brand-logo">
+    <a href="../../../index.html" class="navbar-brand navbar-brand-logo">
     </a>
-    <a class="navbar-brand" href="../index.html">
+    <a class="navbar-brand" href="../../../index.html">
     <span class="navbar-title">RNA-seq Crash Course</span>
     </a>
   </div>
@@ -93,11 +128,11 @@ ul.task-list li input[type="checkbox"] {
           <div class="collapse navbar-collapse" id="navbarCollapse">
             <ul class="navbar-nav navbar-nav-scroll me-auto">
   <li class="nav-item">
-    <a class="nav-link active" href="../index.html" aria-current="page"> 
+    <a class="nav-link" href="../../../index.html"> 
 <span class="menu-text">Home</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="../about.html"> 
+    <a class="nav-link" href="../../../about.html"> 
 <span class="menu-text">About</span></a>
   </li>  
   <li class="nav-item dropdown ">
@@ -106,11 +141,11 @@ ul.task-list li input[type="checkbox"] {
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-computing">    
         <li>
-    <a class="dropdown-item" href="../computing/hpc.html">
+    <a class="dropdown-item" href="../../../computing/hpc.html">
  <span class="dropdown-text">High Performance Computing</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../computing/isaac-ng.html">
+    <a class="dropdown-item" href="../../../computing/isaac-ng.html">
  <span class="dropdown-text">ISAAC-NG</span></a>
   </li>  
     </ul>
@@ -121,19 +156,19 @@ ul.task-list li input[type="checkbox"] {
     </a>
     <ul class="dropdown-menu" aria-labelledby="nav-menu-pipeline">    
         <li>
-    <a class="dropdown-item" href="../pipeline/raw_fastqc.html">
+    <a class="dropdown-item" href="../../../pipeline/raw_fastqc.html">
  <span class="dropdown-text">Raw Reads FastQC</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../pipeline/trim_reads.html">
+    <a class="dropdown-item" href="../../../pipeline/trim_reads.html">
  <span class="dropdown-text">Trim Reads</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../pipeline/map_reads.html">
+    <a class="dropdown-item" href="../../../pipeline/map_reads.html">
  <span class="dropdown-text">Map Reads</span></a>
   </li>  
         <li>
-    <a class="dropdown-item" href="../pipeline/quantify_reads.html">
+    <a class="dropdown-item" href="../../../pipeline/quantify_reads.html">
  <span class="dropdown-text">Quantify reads within genes</span></a>
   </li>  
     </ul>
@@ -154,59 +189,26 @@ ul.task-list li input[type="checkbox"] {
 </div>
       </div> <!-- /container-fluid -->
     </nav>
-  <nav class="quarto-secondary-nav">
-    <div class="container-fluid d-flex">
-      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
-        <i class="bi bi-layout-text-sidebar-reverse"></i>
-      </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../computing/hpc.html">High Performance Computing</a></li></ol></nav>
-        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
-        </a>
-    </div>
-  </nav>
 </header>
 <!-- content -->
 <div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
 <!-- sidebar -->
-  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation docked overflow-auto">
-    <div class="pt-lg-2 mt-2 text-left sidebar-header sidebar-header-stacked">
-      <a href="../index.html" class="sidebar-logo-link">
-      </a>
-      </div>
-    <div class="sidebar-menu-container"> 
-    <ul class="list-unstyled mt-1">
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../computing/hpc.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">High Performance Computing</span></a>
-  </div>
-</li>
-        <li class="sidebar-item">
-  <div class="sidebar-item-container"> 
-  <a href="../computing/isaac-ng.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">ISAAC-NG</span></a>
-  </div>
-</li>
-    </ul>
-    </div>
-</nav>
-<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
         <nav id="TOC" role="doc-toc" class="toc-active">
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#high-performance-computing" id="toc-high-performance-computing" class="nav-link active" data-scroll-target="#high-performance-computing">High Performance Computing</a>
+  <li><a href="#trim-reads" id="toc-trim-reads" class="nav-link active" data-scroll-target="#trim-reads">Trim Reads</a>
   <ul class="collapse">
-  <li><a href="#basic-computing-terminology" id="toc-basic-computing-terminology" class="nav-link" data-scroll-target="#basic-computing-terminology">Basic computing terminology</a>
+  <li><a href="#learning-objectives" id="toc-learning-objectives" class="nav-link" data-scroll-target="#learning-objectives">Learning objectives</a></li>
+  <li><a href="#purpose" id="toc-purpose" class="nav-link" data-scroll-target="#purpose">Purpose</a></li>
+  <li><a href="#fastp-usage" id="toc-fastp-usage" class="nav-link" data-scroll-target="#fastp-usage">fastp usage</a>
   <ul class="collapse">
-  <li><a href="#resources-and-computer-components" id="toc-resources-and-computer-components" class="nav-link" data-scroll-target="#resources-and-computer-components">Resources and computer components</a></li>
-  <li><a href="#an-imperfect-analogy" id="toc-an-imperfect-analogy" class="nav-link" data-scroll-target="#an-imperfect-analogy">An imperfect analogy</a></li>
+  <li><a href="#software-availability" id="toc-software-availability" class="nav-link" data-scroll-target="#software-availability">Software availability</a></li>
+  <li><a href="#command-usage" id="toc-command-usage" class="nav-link" data-scroll-target="#command-usage">Command usage</a></li>
   </ul></li>
-  <li><a href="#what-is-an-hpc" id="toc-what-is-an-hpc" class="nav-link" data-scroll-target="#what-is-an-hpc">What is an HPC?</a></li>
-  <li><a href="#why-use-an-hpc" id="toc-why-use-an-hpc" class="nav-link" data-scroll-target="#why-use-an-hpc">Why use an HPC?</a></li>
-  <li><a href="#other-resources" id="toc-other-resources" class="nav-link" data-scroll-target="#other-resources">Other resources</a></li>
+  <li><a href="#fastp-sbatch-script" id="toc-fastp-sbatch-script" class="nav-link" data-scroll-target="#fastp-sbatch-script">fastp sbatch script</a></li>
   </ul></li>
   </ul>
 </nav>
@@ -229,90 +231,108 @@ ul.task-list li input[type="checkbox"] {
 <p>This website is in its alpha stage. All pages are under active development and are subject to change at any time without warning.</p>
 </div>
 </div>
-<section id="high-performance-computing" class="level1">
-<h1>High Performance Computing</h1>
-<section id="basic-computing-terminology" class="level2">
-<h2 class="anchored" data-anchor-id="basic-computing-terminology">Basic computing terminology</h2>
-<section id="resources-and-computer-components" class="level3">
-<h3 class="anchored" data-anchor-id="resources-and-computer-components">Resources and computer components</h3>
-<dl>
-<dt>Job</dt>
-<dd>
-Some unit of work or collection of tasks that needs to be performed by a computing system. In typical usage this is not well defined, and the scope of what a job is can vary wildly. I typically use job to refer to some logically connected group of tasks that I want the computer to perform.
-</dd>
-<dt>Task</dt>
-<dd>
-A small unit of work, usually a specific operation performed by the computer. Often a part of a larger job.
-</dd>
-<dt>CPU (central processing unit)</dt>
-<dd>
-The core computational unit of a PC or node. This is the hardware component that performs computations. AKA: Processor.
-</dd>
-<dt>Memory / RAM</dt>
-<dd>
-Site of temporary information storage for holding data while computations are performed on the data. Important note: this is distinct from data storage.
-</dd>
-<dt>Data storage / disk space</dt>
-<dd>
-Permanent or long term storage of data.
-</dd>
-</dl>
+<section id="trim-reads" class="level1">
+<h1>Trim Reads</h1>
+<section id="learning-objectives" class="level2">
+<h2 class="anchored" data-anchor-id="learning-objectives">Learning objectives</h2>
+<ul>
+<li>Trim raw reads with fastp</li>
+<li>Generate trimmed reads QC reports with FastQC</li>
+<li>Produce a composite trimmed reads QC report with MultiQC</li>
+</ul>
 </section>
-<section id="an-imperfect-analogy" class="level3">
-<h3 class="anchored" data-anchor-id="an-imperfect-analogy">An imperfect analogy</h3>
-<p>Throughout this page, we will use an analogy to help understand computing. The goal here is to develop a mental model of computing and the interplay of computing components and resources that enables users to more effectively and efficiently utilize the resources they have access to.</p>
-<p>Think about computing as being like a bakery. At this bakery, the overall goal is to prepare all of the menu items and operate the store front.</p>
-<p>There are many <strong>jobs</strong> at this bakery: baking croissants, preparing pastry creams and jams, stocking the pastry cases, and washing dishes among many others. Each job is composed of specific <strong>tasks</strong>: kneading bread dough and placing doughnuts in a pastry case are just a couple of examples. These similarities follow pretty naturally from how we use the terms in computing.</p>
-<p>These jobs and tasks obviously aren’t going to perform themselves. Someone must do these tasks, and they have to have physical resources to perform their tasks. We can think of the bakers as being like <strong>CPUs</strong>. The bakers are who physically perform the tasks of kneading and placing according to recipes and standard operating procedures, much like the CPU performs computations based on sets of instructions called programs. In this analogy the raw ingredients, goods in progress like dough, and kitchen equipment such as mixers represent <strong>memory</strong>. The ingredients and equipment are used temporarily by the bakers, often to transform one thing into another such as shaping a ball of dough into a loaf or using a dish brush to wash a plate. This is much like the role memory plays in computing, where it temporarily holds data while the CPU performs computations on the data. Finally, there are many parts of a bakery that act like <strong>data storage</strong>. This includes the pastry case that holds the finished baked goods in the store front, the shelves in the kitchen that hold equipment, and even the recipe book.</p>
+<section id="purpose" class="level2">
+<h2 class="anchored" data-anchor-id="purpose">Purpose</h2>
+<p>Even successful and high quality sequencing runs produce some problematic reads or portions of reads. The most common issues we run into include low quality base calls and the presence of adapters at the ends of reads. These problematic reads can cause issues in data quality in downstream steps, so we use read trimming to remove them.</p>
+<p>After read trimming, we run FastQC on the trimmed reads to make sure the trimming mitigated any issues observed at the raw reads QC step.</p>
 </section>
-</section>
-<section id="what-is-an-hpc" class="level2">
-<h2 class="anchored" data-anchor-id="what-is-an-hpc">What is an HPC?</h2>
-<div class="quarto-figure quarto-figure-center">
-<figure class="figure">
-<p><img src="https://hbctraining.github.io/Intro-to-shell-flipped/img/compute_cluster.png" class="img-fluid figure-img"></p>
-<figcaption>HPC schematic</figcaption>
-</figure>
+<section id="fastp-usage" class="level2">
+<h2 class="anchored" data-anchor-id="fastp-usage">fastp usage</h2>
+<section id="software-availability" class="level3">
+<h3 class="anchored" data-anchor-id="software-availability">Software availability</h3>
+<p><a href="https://github.com/OpenGene/fastp">fastp docs</a></p>
+<p>fastp is available as Apptainer containers through BioContainers:</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>Terminal</strong></pre>
 </div>
-<ul>
-<li>A collection (<strong>cluster</strong>) of many computers (<strong>nodes</strong>) connected together</li>
-<li>Each node is a collection of CPUs and RAM with a small amount of associated disk space</li>
-<li>Large amount of shared data storage disks connected to nodes provides a huge amount of storage space</li>
-<li>Provides access for a large number of users</li>
-<li>Typically a <strong>login node</strong> that functions as the main way users interact with the HPC
-<ul>
-<li>Keeps the compute nodes free to handle heavy computing</li>
-</ul></li>
-<li>Typically a scheduling system to manage requirements for large number of users who have varying needs</li>
-</ul>
-<p>Analogy: If a PC is like a small mom and pop bake shop, then an HPC is an industrial scale kitchen.</p>
-<ul>
-<li>Have all of the same components but operate on different scales</li>
-<li>Larger scale means more complexity which means different logistics
-<ul>
-<li>Can’t walk up to a store front at a Hostess factory and place an order for a fresh Twinkie</li>
-</ul></li>
-</ul>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" data-filename="Terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span><span class="fu"> fastp</span> <span class="kw">{</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>  <span class="bu">local</span> <span class="va">image_uri</span><span class="op">=</span>https://depot.galaxyproject.org/singularity/fastp:0.23.4--hadf994f_3</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>  <span class="ex">apptainer</span> exec <span class="st">"</span><span class="va">${image_uri}</span><span class="st">"</span> fastp <span class="st">"</span><span class="va">${@}</span><span class="st">"</span></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="kw">}</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
+<p>This method makes fastp available through the <code>fastp</code> command.</p>
 </section>
-<section id="why-use-an-hpc" class="level2">
-<h2 class="anchored" data-anchor-id="why-use-an-hpc">Why use an HPC?</h2>
-<p>Two words: More power</p>
-<ul>
-<li>Each node has more resources than a typical PC
-<ul>
-<li>More CPUs means you can run more tasks at one time</li>
-<li>More RAM means you can run tasks that a PC can’t handle</li>
-<li>More disk space means you can work with more data than a PC can handle</li>
-</ul></li>
-<li>Presence of many compute nodes multiplies the benefits
-<ul>
-<li>Consider the <a href="https://oit.utk.edu/hpsc/isaac-open-enclave-new-kpb/system-overview-cluster-at-kpb/">ISAAC-NG cluster at UTK</a>: More than 200 nodes and over 12,000 cores!</li>
-</ul></li>
-</ul>
+<section id="command-usage" class="level3">
+<h3 class="anchored" data-anchor-id="command-usage">Command usage</h3>
+<p>Basic usage:</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>Terminal</strong></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" data-filename="Terminal"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="ex">fastp</span> <span class="dt">\</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>  <span class="at">--in1</span> sample1.fastq.gz <span class="dt">\</span></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">--out1</span> sample1_trimmed.fastq.gz</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
 </section>
-<section id="other-resources" class="level2">
-<h2 class="anchored" data-anchor-id="other-resources">Other resources</h2>
-<p>Much of this was motivated by the <a href="https://hbctraining.github.io/Intro-to-shell-flipped/lessons/08_HPC_intro_and_terms.html">HBC Training HPC intro</a>. Check out their page especially for thoughts on multithreading and parallelization.</p>
+</section>
+<section id="fastp-sbatch-script" class="level2">
+<h2 class="anchored" data-anchor-id="fastp-sbatch-script">fastp sbatch script</h2>
+<p>Run fastp <a href="https://gist.github.com/izaakm/fe294a66be94113d60ff2dc220735646#parallel">in parallel</a> using <code>--ntasks</code> and <code>srun</code>.</p>
+<div class="code-with-filename">
+<div class="code-with-filename-file">
+<pre><strong>trim_reads_fastp.sh</strong></pre>
+</div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" data-filename="trim_reads_fastp.sh"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co">#!/bin/bash</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --job-name=trim_reads_fastp</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --ntasks=8</span></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --cpus-per-task=1</span></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --mem=4GB</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="co">#SBATCH --time=00-00:30:00</span></span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a><span class="op">&lt;</span>... <span class="ex">Remaining</span> constant SBATCH flags ...<span class="op">&gt;</span></span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a><span class="co">#######################################</span></span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="co"># Constants</span></span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a><span class="co">#######################################</span></span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a><span class="co"># Array of raw fastq files</span></span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a><span class="bu">readonly</span> <span class="va">fastqs</span><span class="op">=</span><span class="va">(</span>data/reads/raw/<span class="pp">*</span>.fastq.gz<span class="va">)</span></span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a><span class="co"># Output directory paths</span></span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a><span class="bu">readonly</span> <span class="va">out_data_dir</span><span class="op">=</span><span class="st">"data/reads/trim"</span></span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a><span class="bu">readonly</span> <span class="va">out_reports_dir</span><span class="op">=</span><span class="st">"reports/fastp"</span></span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a><span class="co">#######################################</span></span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a><span class="co"># Load software</span></span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="co">#######################################</span></span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a><span class="co"># echo to stderr</span></span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span><span class="fu"> errcho</span> <span class="kw">{</span></span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>    <span class="op">&gt;&amp;</span><span class="dv">2</span> <span class="bu">echo</span> <span class="st">"</span><span class="va">${@}</span><span class="st">"</span></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="kw">}</span></span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a><span class="kw">function</span><span class="fu"> fastp</span> <span class="kw">{</span></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>  <span class="bu">local</span> <span class="va">image_uri</span><span class="op">=</span>https://depot.galaxyproject.org/singularity/fastp:0.23.4--hadf994f_3</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>  <span class="ex">apptainer</span> exec <span class="st">"</span><span class="va">${image_uri}</span><span class="st">"</span> fastp <span class="st">"</span><span class="va">${@}</span><span class="st">"</span></span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a><span class="kw">}</span></span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a><span class="co">#######################################</span></span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a><span class="co"># Main program.</span></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a><span class="co">#######################################</span></span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> fastq <span class="kw">in</span> <span class="st">"</span><span class="va">${fastqs</span><span class="op">[@]</span><span class="va">}</span><span class="st">"</span><span class="kw">;</span> <span class="cf">do</span></span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>  <span class="ex">errcho</span> <span class="st">"Trim reads: </span><span class="va">${fastq}</span><span class="st">"</span></span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>  <span class="va">sample_name</span><span class="op">=</span><span class="va">$(</span><span class="fu">basename</span> <span class="va">$fastq</span> .fastq.gz<span class="va">)</span></span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>  <span class="ex">srun</span> <span class="at">--ntasks</span> 1 <span class="at">--cpus-per-task</span> 4 <span class="dt">\</span></span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>    fastp <span class="dt">\</span></span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>    <span class="at">--thread</span> <span class="st">"</span><span class="va">${SLURM_CPUS_PER_TASK}</span><span class="st">"</span> <span class="dt">\</span></span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>    <span class="at">--in1</span> <span class="st">"</span><span class="va">${fastq}</span><span class="st">"</span> <span class="dt">\</span></span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>    <span class="at">--out1</span> <span class="st">"</span><span class="va">${out_data_dir}</span><span class="st">/</span><span class="va">${sample_name}</span><span class="st">_trimmed.fastq.gz"</span> <span class="dt">\</span></span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>    <span class="at">--json</span> <span class="st">"</span><span class="va">${out_reports_dir}</span><span class="st">/</span><span class="va">${sample_name}</span><span class="st">_fastp.json"</span> <span class="dt">\</span></span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>    <span class="at">--html</span> <span class="st">"</span><span class="va">${out_reports_dir}</span><span class="st">/</span><span class="va">${sample_name}</span><span class="st">_fastp.html"</span> <span class="dt">\</span></span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>    <span class="kw">&amp;</span></span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a><span class="cf">done</span></span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a><span class="bu">wait</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+</div>
 
 
 </section>
