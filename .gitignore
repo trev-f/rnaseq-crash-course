@@ -6,3 +6,5 @@
 # Quarto specific
 /_site/
 /.quarto/
+/exploratory/
+
