@@ -3,6 +3,7 @@ site_source := $(wildcard \
 	src/quarto/_quarto*.yml \
 	src/quarto/computing/*.qmd \
 	src/quarto/pipeline/*.qmd \
+	src/quarto/slides/*.qmd \
 )
 site_sentinel := .cache/sentinels/.render-site
 publish_sentinel := .cache/sentinels/.publish-site
