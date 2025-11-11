@@ -19,3 +19,22 @@ format: revealjs
 - What is literate programming?
 - How can Quarto be used for literate programming?
 - How does git fit into this workflow?
+
+# What are the goals of an RNA-seq analysis?
+
+What can we learn from an RNA-seq experiment?
+
+## -omics methods are just techniques for answering research questions
+
+- G
+
+## Transcriptomics is a tool for hypothesis generation
+
+- Measure every gene in every sample to produce dataset with tens or hundreds of thousands of data points
+- Apply statistical/ML methods to identify patterns in high dimensional data
+- Make inferences about biological meaning, i.e. generate hypotheses
+
+High dimensionality switches experimental paradigm to one of discovery
+
+- "Which genes are involved?" instead of "Is gene X involved?"
+
