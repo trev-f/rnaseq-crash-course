@@ -1,18 +1,21 @@
 ---
 title: "RNA-seq Crash Course"
-date: 2025-11-10
+date: 2025-11-24
 author: "Trevor F. Freeman"
 institute: "UTIA Genomics Center"
 format: revealjs
 ---
 
-# Before we get started
+# What will we cover?
 
-## UTK bioinformatics useful links
+## Intuition behind major RNA-seq analysis steps
 
-- [UTK Bioinformatics Consulting Services](https://bioinfo.utk.edu/) -- A collaborative group of genomics and bioinformatics analysts and scientific computing specialists aimed at providing a range of research support and training to faculty, staff, and students.
-- [UTK Bioinformatics Newsletter](https://tiny.utk.edu/BioinformaticsNewsletter) -- A monthly newsletter about the latest bioinformatics and computational biology research at the University of Tennessee.
-- [Bioinformatics office hours](https://oit.utk.edu/hpsc/bioinformatics-computing-support/)
-- [High Performance & Scientific Computing](https://oit.utk.edu/hpsc/)
-- [UT Genomics Core](https://dna.utk.edu/)
+- What are the goals of an RNA-seq analysis?
+- How are short sequencing reads transformed into quantitative data?
+- How is quantitative data used to test hypotheses?
 
+## A setup for everyday analysis with literate programming
+
+- What is literate programming?
+- How can Quarto be used for literate programming?
+- How does git fit into this workflow?
