@@ -24,10 +24,6 @@ format: revealjs
 
 What can we learn from an RNA-seq experiment?
 
-## -omics methods are just techniques for answering research questions
-
-- G
-
 ## Transcriptomics is a tool for hypothesis generation
 
 - Measure every gene in every sample to produce dataset with tens or hundreds of thousands of data points
@@ -37,4 +33,14 @@ What can we learn from an RNA-seq experiment?
 High dimensionality switches experimental paradigm to one of discovery
 
 - "Which genes are involved?" instead of "Is gene X involved?"
+
+## -omics methods are just techniques for answering research questions
+
+- Specific goal(s) means easier analysis and more impactful results
+- Still have data to chase vague goals
+
+Example questions:
+
+- Vague: Drug treated animals have changes in gene expression relative to nontreated animals
+- Specific: Insulin stimulated genes are downregulated in drug treated relative to nontreated animals
 
